@@ -10,7 +10,7 @@ pip install numpy
 ```
 ## Data Download
 The data is hosted on Google Drive. You can download it using the following link: 
-- [Download Data](https://drive.google.com/file/d/1u9Bhzk_yjk9sF78fc8Nlj3GVLv9A8Eyu/view?usp=sharing)
+- [Download Data]()
 
 Once you download it please un-zip it and place it in the same directory as the source files.
 
