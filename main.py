@@ -153,10 +153,10 @@ def main():
 
     # Run the experiments
     dataset_choice = sys.argv[1]  # dataset_choice in [flight, photo, wiki]
-    percentage_of_db = float(sys.argv[2])
-    percentage_of_ql = float(sys.argv[3])
-    budget = float(sys.argv[4])
-    n_iterations = int(sys.argv[5])
+    percentage_of_db = float(sys.argv[2])  # percentage of the database
+    percentage_of_ql = float(sys.argv[3])  # percentage of the query-log
+    budget = float(sys.argv[4])  # budget
+    n_iterations = int(sys.argv[5])  # number of SCG iterations
     av_stdevs_calculation = bool(int(sys.argv[6]))  # 0/1
 
     if dataset_choice == 'flight':
