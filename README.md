@@ -23,7 +23,7 @@ The command line arguments correspond to:
 - `[dataset_choice]`: The desired dataset $D$ inside the `sample_data` folder. Select one from the list [flight, photo, wiki].
 - `[percentage_of_db]`: The percentage of $D$ to use as input data. Select a number inside the continuous interval [0, 1].
 - `[percentage_of_ql]`: The percentage of queries from the corresponding query-log $Q$ to use as input log. Select a number inside the continuous interval [0, 1].
-- `[budget]`: The budget $B$ is the percentage $D$ to be kept. Select a number inside the continuous interval [0,1].
+- `[budget]`: The budget $B$ is the percentage of $D$ to be kept. Select a number inside the continuous interval [0,1].
 - `[n_iterations]`: The number of `SCG` iterations $T$ the `DepDF` routine will perform. Select a number from the list [2000, 10000, 50000, 100000].
 - `[av_stdevs_calculation]`: Whether the answer set diversity $ad(Q,D)$ is computed or not. Select `0` (False) not to perform the calculation, and `1` (True) to perform it.
 
