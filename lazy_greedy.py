@@ -19,6 +19,7 @@ def objective(dataset, dataset_prime_indices, queries, jaccard_sim=True):
                     similarity = jaccard(dataset.loc[d].values.flatten().tolist(), dataset.loc[d_prime].values.flatten().tolist())
                 else:
                     similarity = cosine_similarity([dataset.loc[d].values.flatten().tolist()], [dataset.loc[d_prime].values.flatten().tolist()])[0][0]
+                    similarity = (similarity + 1)/2
                 if similarity > best_similarity_d:
                     best_similarity_d = similarity
             partial_value = partial_value + (1 / len(answer_set_q_dataset))*best_similarity_d

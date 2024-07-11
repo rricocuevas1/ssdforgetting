@@ -2,71 +2,97 @@ import time
 import pandas as pd
 from statistics import mean
 from statistics import pstdev
-from greedy import *
+from query_based_amnesia import *
+from lazy_greedy import *
 from pipagerounding import *
-from scgreedy import *
-from knapsack_indep import *
+from dep_df import *
+from indep_df import *
 from sklearn.metrics.pairwise import cosine_similarity
 import sys
-
+import signal
+import uuid
+from datetime import datetime
+# chmod +x run_tmux_sessions.sh
 
 def main():
-    def execute_computations(dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename, jaccard_sim=True , n_iterations = 2000):
+    def execute_computations(dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename, jaccard_sim=True , n_iterations = 2000, only_time=False):
         print(f'Tuples: {n_rows}, Queries: {n_queries}, Budget: {budget}')
         # Start computations
-        # KNAPSACK
+        # INDEP_DF
         lasttime = time.time()
-        answer_knapsack = knapsack_solver(n_rows, budget, queries)
+        answer_indep_df = indep_df(n_rows, budget, queries)
         currtime = time.time()
-        knapsak_time = (currtime - lasttime)
-        knapsack_utility = objective(dataset, answer_knapsack, queries, jaccard_sim)
-        print(f"KNAPSACK time: {knapsak_time}")
-        print(f"KNAPSACK utility: {knapsack_utility}")
+        indep_df_time = (currtime - lasttime)
+        if not only_time:
+            indep_df_utility = objective(dataset, answer_indep_df, queries, jaccard_sim)
+            print(f"Indep_df utility: {indep_df_utility}")
+        print(f"Indep_df time: {indep_df_time}")
         print("\n")
-        # SCG (100 times)
-        f_answers = []
-        times = []
-        for i in range(100):
-            print(f'iteration {i}')
-            lasttime = time.time()
-            x_star = scg(n_rows, budget, queries, prob_queries, n_queries, dataset, T=n_iterations, K=1, jaccard_sim=jaccard_sim)
-            currtime = time.time()
-            laptime = (currtime - lasttime)
-            times.append(laptime)
-            answer_SCG = pipage_rounding(x_star, n_rows, budget)
-            f_answers.append(objective(dataset, answer_SCG, queries, jaccard_sim))
-            print(f'SCG time: {laptime}')
-            print(f'SCG utility: {f_answers[i]}')
-        scg_best_time = min(times)
-        scg_average_time = mean(times)
-        scg_stddev = pstdev(times)
-        print(f"SCG time: best = {scg_best_time}, average = {scg_average_time}, standard deviation = {scg_stddev}")
-        scg_best_ans = max(f_answers)
-        scg_average_ans = mean(f_answers)
-        scg_stddev_ans = pstdev(f_answers)
-        print(f"SCG utility: best = {scg_best_ans}, average = {scg_average_ans}, standard deviation = {scg_stddev_ans}")
+
+        # DEP_DF
+        lasttime = time.time()
+        x_star = scg(n_rows, budget, queries, prob_queries, n_queries, dataset, T=n_iterations, K=1, jaccard_sim=jaccard_sim)
+        answer_dep_df = pipage_rounding(x_star, n_rows, budget)
+        currtime = time.time()
+        dep_df_time = (currtime - lasttime)
+        if not only_time:
+            dep_df_utility = objective(dataset, answer_dep_df, queries, jaccard_sim)
+            print(f"Dep_df utility: {dep_df_utility}")
+        print(f"Dep_df time: {dep_df_time}")
         print("\n")
+
+        # QUERY-BASED AMNESIA
+        lasttime = time.time()
+        answer_query_based_amnesia = query_based_amnesia(n_rows, budget, queries)
+        currtime = time.time()
+        query_based_amnesia_time = (currtime - lasttime)
+        if not only_time:
+            query_based_amnesia_utility = objective(dataset, answer_query_based_amnesia, queries, jaccard_sim)
+            print(f"QUERY-BASED AMNESIA utility: {query_based_amnesia_utility}")
+        print(f"QUERY-BASED AMNESIA time: {query_based_amnesia_time}")
+        print("\n")
+
         # LAZY GREEDY
-        lasttime = time.time()
-        answer_lazy_greedy_q = lazy_greedy(dataset, queries, budget,jaccard_sim)
-        currtime = time.time()
-        l_greedy_time = (currtime - lasttime)
-        utility_l_greedy = objective(dataset, answer_lazy_greedy_q, queries,jaccard_sim)
-        print("LAZY GREEDY time:", l_greedy_time)
-        print("LAZY GREEDY utility:", utility_l_greedy)
-        print("\n")
+        # Define a handler for the alarm signal
+        def handler(signum, frame):
+            raise TimeoutError("LAZY GREEDY computation exceeded the time limit.")
+        # Register the handler for the SIGALRM signal
+        signal.signal(signal.SIGALRM, handler)
+        # Set an alarm for 3 days (3*24*60*60 seconds)
+        signal.alarm(3 * 24 * 60 * 60)
+        try:
+            lasttime = time.time()
+            answer_lazy_greedy = lazy_greedy(dataset, queries, budget, jaccard_sim)
+            currtime = time.time()
+            lazy_greedy_time = (currtime - lasttime)
+            if not only_time:
+                utility_lazy_greedy = objective(dataset, answer_lazy_greedy, queries, jaccard_sim)
+                print("LAZY GREEDY utility:", utility_lazy_greedy)
+            print("LAZY GREEDY time:", lazy_greedy_time)
+        except TimeoutError as e:
+            print(e)
+            utility_lazy_greedy = -1
+            lazy_greedy_time = -1
+            print("LAZY GREEDY computation exceeded 3 days and was terminated.")
+            print("LAZY GREEDY utility could not be calculated because the computation was terminated.")
+        finally:
+            # Cancel the alarm
+            signal.alarm(0)
+
+        # Write the results into a file
         with open(results_filename, 'w') as file:
-            file.write(f'Tuples: {n_rows}, Queries: {n_queries}, Budget: {budget}\n')
-            file.write("\n")
-            file.write(f"KNAPSACK time: {knapsak_time}\n")
-            file.write(f"KNAPSACK utility: {knapsack_utility}\n")
-            file.write("\n")
-            file.write(f"SCG time: best = {scg_best_time}, average = {scg_average_time}, standard deviation = {scg_stddev}\n")
-            file.write(f"SCG utility: best = {scg_best_ans}, average = {scg_average_ans}, standard deviation = {scg_stddev_ans}\n")
-            file.write("\n")
-            file.write(f"LAZY GREEDY time: {l_greedy_time}\n")
-            file.write(f"LAZY GREEDY utility: {utility_l_greedy}\n")
-            file.write("\n")
+            if not only_time:
+                file.write(f'Algorithm, Time, Utility\n')
+                file.write(f"INDEP_DF, {indep_df_time}, {indep_df_utility}\n")
+                file.write(f"DEP_DF, {dep_df_time}, {dep_df_utility}\n")
+                file.write(f"QUERY_BASED_AMNESIA, {query_based_amnesia_time}, {query_based_amnesia_utility}\n")
+                file.write(f"LAZY GREEDY, {lazy_greedy_time}, {utility_lazy_greedy}\n")
+            else:
+                file.write(f'Algorithm, Time\n')
+                file.write(f"INDEP_DF, {indep_df_time}\n")
+                file.write(f"DEP_DF, {dep_df_time}\n")
+                file.write(f"QUERY_BASED_AMNESIA, {query_based_amnesia_time}\n")
+                file.write(f"LAZY GREEDY, {lazy_greedy_time}\n")
         file.close()
 
     def compute_pairwise_sims(points, dataset, jaccard_sim):
@@ -148,7 +174,9 @@ def main():
         for i in range(n_queries):
             queries[i] = (query_list[i], 1 / n_queries)
             prob_queries.append(queries[i][1])
-        results_filename = f"sample_data/real/results_{dataset_choice}%db{percentage_of_db}_%ql{percentage_of_ql}_budget{budget}_iterationsSCG{n_iterations}"
+        timestamp = datetime.now().strftime('%Y%m%d%H%M%S%f')
+        unique_id = uuid.uuid4()
+        results_filename = f"sample_data/real/results_{dataset_choice}%db{percentage_of_db}_%ql{percentage_of_ql}_budget{budget}_iterationsSCG{n_iterations}_onlytime{only_time}_{timestamp}_{unique_id}"
         return dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename
 
     # Run the experiments
@@ -158,6 +186,7 @@ def main():
     budget = float(sys.argv[4])  # budget
     n_iterations = int(sys.argv[5])  # number of SCG iterations
     av_stdevs_calculation = bool(int(sys.argv[6]))  # 0/1
+    only_time = bool(int(sys.argv[7]))  # 0/1
 
     if dataset_choice == 'flight':
         jaccard_sim = True
@@ -178,7 +207,7 @@ def main():
         print(f"The average standard deviation is: {mean(stdevs)}")
         avstdevs = mean(stdevs)
     execute_computations(dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename,
-                         jaccard_sim=jaccard_sim, n_iterations=n_iterations)
+                         jaccard_sim=jaccard_sim, n_iterations=n_iterations, only_time=only_time)
     if av_stdevs_calculation:
         f = open(f'{results_filename}', 'a')
         f.write(f"The average standard deviation is: {avstdevs}")

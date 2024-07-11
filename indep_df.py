@@ -12,6 +12,6 @@ def compute_weight(n_rows, queries):
     return weight
 
 
-def knapsack_solver(n_rows, budget, queries):
+def indep_df(n_rows, budget, queries):
     values = compute_weight(n_rows, queries)
     return (np.argpartition(values, -budget)[-budget:]).tolist()
