@@ -14,7 +14,15 @@ The data is hosted on Google Drive. You can download it using the following link
 
 Once you download it please un-zip it and place it in the same directory as the source files.
 
-## Usage
+## Experiment reproducibility
+In order to replicate our experiments run 
+```
+chmod +x run_tmux_sessions.sh
+./run_tmux_sessions.sh
+```
+Be aware that this will generate $510$ tmux sessions and as many corresponding solution files.
+
+## General Usage
 In order to run `IndepDF` and `DepDF` (this paper) vs `LAZY-GREEDY` and `QUERY-BASED-AMNESIA` (baselines) execute
 ```
 python main.py [dataset_choice] [percentage_of_db] [percentage_of_ql] [budget] [n_iterations] [av_stdevs_calculation] [only_time]
@@ -33,11 +41,3 @@ An example is given in the code snippet below,
 python main.py flight 1 0.25 0.01 2000 0 0
 ```
 In this example $D$ equals the full flights dataset, $Q$ is the $25$% of the query-log, $B$ is $1$% of $|D|$, $T= 2000$, $ad(Q,D)$ is not computed, and both the time taken to build $D^* $ and $f(D^*)$ are reported.
-
-## Experiment reproducibility
-In order to replicate our experiments run 
-```
-chmod +x run_tmux_sessions.sh
-./run_tmux_sessions.sh
-```
-Be aware that this will generate $510$ tmux sessions and as many corresponding solution files.
