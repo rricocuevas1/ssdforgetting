@@ -34,10 +34,10 @@ The command line arguments correspond to:
 - `[budget]`: The budget $B$ is the percentage of $D$ to be kept. Select a number inside the continuous interval [0,1].
 - `[n_iterations]`: The number of `SCG` iterations $T$ the `DepDF` routine will perform. Select a number from the list [2000, 10000, 50000, 100000].
 - `[av_stdevs_calculation]`: Whether the answer set diversity $ad(Q,D)$ is computed or not. Select `0` (False) not to perform the calculation, and `1` (True) to perform it.
-- `[only_time]`: Whether $f(D^*)$ is evaluated or not for solution $D^* $ or only the time taken to build $D^* $ is reported. Select `0` (False) to return both the time and function evaluation and `1` (True) to just return the time.
+- `[only_time]`: Whether $f(D^{\*})$ is evaluated or not for solution $D^{\*}$ or only the time taken to build $D^{\*}$ is reported. Select `0` (False) to return both the time and function evaluation and `1` (True) to just return the time.
 
 An example is given in the code snippet below,
 ```
 python main.py flight 1 0.25 0.01 2000 0 0
 ```
-In this example $D$ equals the full flights dataset, $Q$ is the $25$% of the query-log, $B$ is $1$% of $|D|$, $T= 2000$, $ad(Q,D)$ is not computed, and both the time taken to build $D^* $ and $f(D^*)$ are reported.
+In this example $D$ equals the full flights dataset, $Q$ is the $25$% of the query-log, $B$ is $1$% of $|D|$, $T= 2000$, $ad(Q,D)$ is not computed, and both the time taken to build $D^* $ and $f(D^{\*})$ are reported.
