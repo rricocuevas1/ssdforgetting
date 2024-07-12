@@ -12,72 +12,58 @@ import sys
 import signal
 import uuid
 from datetime import datetime
-# chmod +x run_tmux_sessions.sh
+
 
 def main():
-    def execute_computations(dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename, jaccard_sim=True , n_iterations = 2000, only_time=False):
+    def execute_computations(dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename, jaccard_sim=True, n_iterations=2000, only_time=False):
+        def handler(signum, frame):
+            raise TimeoutError("Computation exceeded the time limit.")
+
+        def run_with_timeout(func, *args):
+            signal.signal(signal.SIGALRM, handler)
+            signal.alarm(3 * 24 * 60 * 60)  # Set an alarm for 3 days
+            try:
+                lasttime = time.time()
+                result = func(*args)
+                currtime = time.time()
+                elapsed_time = (currtime - lasttime)
+                return result, elapsed_time
+            except TimeoutError as e:
+                print(e)
+                return None, -1
+            finally:
+                signal.alarm(0)  # Cancel the alarm
+
+        def print_results(method_name, result, elapsed_time):
+            if result is not None and not only_time:
+                utility = objective(dataset, result, queries, jaccard_sim)
+                print(f"{method_name} utility: {utility}")
+            else:
+                utility = -1
+            print(f"{method_name} time: {elapsed_time}")
+            return elapsed_time, utility
+
         print(f'Tuples: {n_rows}, Queries: {n_queries}, Budget: {budget}')
-        # Start computations
+
         # INDEP_DF
-        lasttime = time.time()
-        answer_indep_df = indep_df(n_rows, budget, queries)
-        currtime = time.time()
-        indep_df_time = (currtime - lasttime)
-        if not only_time:
-            indep_df_utility = objective(dataset, answer_indep_df, queries, jaccard_sim)
-            print(f"Indep_df utility: {indep_df_utility}")
-        print(f"Indep_df time: {indep_df_time}")
-        print("\n")
+        answer_indep_df, indep_df_time = run_with_timeout(indep_df, n_rows, budget, queries)
+        indep_df_time, indep_df_utility = print_results("Indep_df", answer_indep_df, indep_df_time)
 
         # DEP_DF
-        lasttime = time.time()
-        x_star = scg(n_rows, budget, queries, prob_queries, n_queries, dataset, T=n_iterations, K=1, jaccard_sim=jaccard_sim)
-        answer_dep_df = pipage_rounding(x_star, n_rows, budget)
-        currtime = time.time()
-        dep_df_time = (currtime - lasttime)
-        if not only_time:
-            dep_df_utility = objective(dataset, answer_dep_df, queries, jaccard_sim)
-            print(f"Dep_df utility: {dep_df_utility}")
-        print(f"Dep_df time: {dep_df_time}")
-        print("\n")
+        def dep_df_computation():
+            x_star = scg(n_rows, budget, queries, prob_queries, n_queries, dataset, T=n_iterations, K=1, jaccard_sim=jaccard_sim)
+            return pipage_rounding(x_star, n_rows, budget)
+
+        answer_dep_df, dep_df_time = run_with_timeout(dep_df_computation)
+        dep_df_time, dep_df_utility = print_results("Dep_df", answer_dep_df, dep_df_time)
 
         # QUERY-BASED AMNESIA
-        lasttime = time.time()
-        answer_query_based_amnesia = query_based_amnesia(n_rows, budget, queries)
-        currtime = time.time()
-        query_based_amnesia_time = (currtime - lasttime)
-        if not only_time:
-            query_based_amnesia_utility = objective(dataset, answer_query_based_amnesia, queries, jaccard_sim)
-            print(f"QUERY-BASED AMNESIA utility: {query_based_amnesia_utility}")
-        print(f"QUERY-BASED AMNESIA time: {query_based_amnesia_time}")
-        print("\n")
+        answer_query_based_amnesia, query_based_amnesia_time = run_with_timeout(query_based_amnesia, n_rows, budget, queries)
+        query_based_amnesia_time, query_based_amnesia_utility = print_results("QUERY-BASED AMNESIA", answer_query_based_amnesia, query_based_amnesia_time)
 
         # LAZY GREEDY
-        # Define a handler for the alarm signal
-        def handler(signum, frame):
-            raise TimeoutError("LAZY GREEDY computation exceeded the time limit.")
-        # Register the handler for the SIGALRM signal
-        signal.signal(signal.SIGALRM, handler)
-        # Set an alarm for 3 days (3*24*60*60 seconds)
-        signal.alarm(3 * 24 * 60 * 60)
-        try:
-            lasttime = time.time()
-            answer_lazy_greedy = lazy_greedy(dataset, queries, budget, jaccard_sim)
-            currtime = time.time()
-            lazy_greedy_time = (currtime - lasttime)
-            if not only_time:
-                utility_lazy_greedy = objective(dataset, answer_lazy_greedy, queries, jaccard_sim)
-                print("LAZY GREEDY utility:", utility_lazy_greedy)
-            print("LAZY GREEDY time:", lazy_greedy_time)
-        except TimeoutError as e:
-            print(e)
-            utility_lazy_greedy = -1
-            lazy_greedy_time = -1
-            print("LAZY GREEDY computation exceeded 3 days and was terminated.")
-            print("LAZY GREEDY utility could not be calculated because the computation was terminated.")
-        finally:
-            # Cancel the alarm
-            signal.alarm(0)
+        answer_lazy_greedy, lazy_greedy_time = run_with_timeout(lazy_greedy, dataset, queries, budget, jaccard_sim)
+        lazy_greedy_time, utility_lazy_greedy = print_results("LAZY GREEDY", answer_lazy_greedy, lazy_greedy_time)
 
         # Write the results into a file
         with open(results_filename, 'w') as file:
@@ -93,7 +79,6 @@ def main():
                 file.write(f"DEP_DF, {dep_df_time}\n")
                 file.write(f"QUERY_BASED_AMNESIA, {query_based_amnesia_time}\n")
                 file.write(f"LAZY GREEDY, {lazy_greedy_time}\n")
-        file.close()
 
     def compute_pairwise_sims(points, dataset, jaccard_sim):
         n = len(points)
@@ -105,14 +90,15 @@ def main():
                 if jaccard_sim:
                     s = jaccard(d_i, d_j)
                     if s != 0:
-                        sims.append(jaccard(d_i, d_j))
+                        sims.append(s)
                 else:
                     s = cosine_similarity([d_i], [d_j])[0][0]
+                    s = (s+1)/2
                     if s != 0:
-                        sims.append(cosine_similarity([d_i], [d_j])[0][0])
+                        sims.append(s)
         return sims
 
-    def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iterations):
+    def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iterations,av_stdevs_calculation):
         dataset_paths = ["sample_data/real/flight data/flights.csv",
                          "sample_data/real/open photo data/photos.csv",
                          "sample_data/real/Wikidata/wikidata.csv"]
@@ -176,7 +162,7 @@ def main():
             prob_queries.append(queries[i][1])
         timestamp = datetime.now().strftime('%Y%m%d%H%M%S%f')
         unique_id = uuid.uuid4()
-        results_filename = f"sample_data/real/results_{dataset_choice}%db{percentage_of_db}_%ql{percentage_of_ql}_budget{budget}_iterationsSCG{n_iterations}_onlytime{only_time}_{timestamp}_{unique_id}"
+        results_filename = f"sample_data/real/results_{dataset_choice}%db{percentage_of_db}_%ql{percentage_of_ql}_budget{budget}_iterations{n_iterations}_av{av_stdevs_calculation}_onlytime{only_time}_{timestamp}_{unique_id}"
         return dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename
 
     # Run the experiments
@@ -184,7 +170,7 @@ def main():
     percentage_of_db = float(sys.argv[2])  # percentage of the database
     percentage_of_ql = float(sys.argv[3])  # percentage of the query-log
     budget = float(sys.argv[4])  # budget
-    n_iterations = int(sys.argv[5])  # number of SCG iterations
+    n_iterations = int(sys.argv[5])  # number of iterations
     av_stdevs_calculation = bool(int(sys.argv[6]))  # 0/1
     only_time = bool(int(sys.argv[7]))  # 0/1
 
@@ -193,7 +179,7 @@ def main():
     else:
         jaccard_sim = False
     dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename = read_data(dataset_choice,
-        percentage_of_db, percentage_of_ql, budget, n_iterations)
+        percentage_of_db, percentage_of_ql, budget, n_iterations, av_stdevs_calculation)
 
     if av_stdevs_calculation:
         stdevs = []
@@ -210,7 +196,7 @@ def main():
                          jaccard_sim=jaccard_sim, n_iterations=n_iterations, only_time=only_time)
     if av_stdevs_calculation:
         f = open(f'{results_filename}', 'a')
-        f.write(f"The average standard deviation is: {avstdevs}")
+        f.write(f"\nThe average standard deviation is: {avstdevs}")
         f.close()
 
 

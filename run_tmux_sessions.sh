@@ -14,6 +14,9 @@ configs=(
     "photo 1 0.1 0.005 2000 0 0"
     "photo 1 0.1 0.01 2000 0 0"
     "photo 1 0.1 0.02 2000 0 0"
+    "photo 1 0.1 0.01 10000 0 0"
+    "photo 1 0.1 0.01 50000 0 0"
+    "photo 1 0.1 0.01 100000 0 0"
     "wiki 1 1 0.01 2000 0 0"
     "wiki 1 1 0.1 2000 0 0"
     "wiki 1 1 0.25 2000 0 0"
@@ -23,6 +26,10 @@ configs=(
     "photo 1 0.5 42 2000 1 0"
     "photo 1 0.75 42 2000 1 0"
     "photo 1 1 42 2000 1 0"
+    "flight 1 0.25 12 2000 1 0"
+    "flight 1 0.5 12 2000 1 0"
+    "flight 1 0.75 12 2000 1 0"
+    "flight 1 1 12 2000 1 0"
     "flight 0.25 1 120 2000 0 1"
     "flight 0.5 1 120 2000 0 1"
     "flight 0.75 1 120 2000 0 1"
@@ -52,7 +59,7 @@ configs=(
 # Loop through each configuration and run the command 10 times for each
 session_number=1
 for config in "${configs[@]}"; do
-    for run in {1..25}; do
+    for run in {1..10}; do
         session_name="session_${session_number}"
         full_command="$command $config"
         tmux new-session -d -s $session_name "$full_command"
