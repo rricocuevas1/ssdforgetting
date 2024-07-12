@@ -40,4 +40,4 @@ An example is given in the code snippet below,
 ```
 python main.py flight 1 0.25 0.01 2000 0 0
 ```
-In this example $D$ equals the full flights dataset, $Q$ is the $25$% of the query-log, $B$ is $1$% of $|D|$, $T= 2000$, $ad(Q,D)$ is not computed, and both the time taken to build $D^* $ and $f(D^{\*})$ are reported.
+In this example $D$ equals the full flights dataset, $Q$ is the $25$% of the query-log, $B$ is $1$% of $|D|$, $T= 2000$, $ad(Q,D)$ is not computed, and both the time taken to build $D^{\*}$ and $f(D^{\*})$ are reported.
