@@ -13,9 +13,9 @@ def compute_frequency(n_rows, queries):
 
 
 def query_based_amnesia(n_rows, budget, queries):
-    epsilon = 1e-9
+    epsilon = float(1e-9)
     values = compute_frequency(n_rows, queries)
-    values = values + epsilon
+    values = [value + epsilon for value in values]
     probabilities = values / np.sum(values)
     selected_indices = np.random.choice(len(values), size=budget, p=probabilities, replace=False)
     return selected_indices.tolist()
