@@ -47,10 +47,10 @@ configs=(
     "wiki 1 1 1311 2000 0 1"
 )
 
-# Loop through each configuration and run the command 10 times for each
+# Loop through each configuration and run the command 5 times for each
 session_number=1
 for config in "${configs[@]}"; do
-    for run in {1..5}; do
+    for run in {1..10}; do
         session_name="session_${session_number}"
         full_command="$command $config; exec bash"
         tmux new-session -d -s $session_name "$full_command"
