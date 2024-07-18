@@ -21,8 +21,7 @@ def main():
 
         def run_with_timeout(func, *args):
             signal.signal(signal.SIGALRM, handler)
-            #signal.alarm(3 * 24 * 60 * 60)  # Set an alarm for 3 days
-            signal.alarm(1)
+            signal.alarm(3 * 24 * 60 * 60)  # Set an alarm for 3 days
             try:
                 lasttime = time.time()
                 result = func(*args)
