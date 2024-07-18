@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Define the command and the configurations
-command="python main.py"
+command="python3 main.py"
 configs=(
     "flight 1 1 0.1 2000 0 0"
     "flight 1 1 0.25 2000 0 0"
