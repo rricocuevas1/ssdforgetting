@@ -20,6 +20,7 @@ In order to replicate our experiments run
 chmod +x run_tmux_sessions.sh
 ./run_tmux_sessions.sh
 ```
+Note that the experiments will take 3 days to complete.
 
 ## General Usage
 In order to run `IndepDF` and `DepDF` (this paper) vs `LAZY-GREEDY` and `QUERY-BASED-AMNESIA` (baselines) execute
