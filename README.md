@@ -20,7 +20,6 @@ In order to replicate our experiments run
 chmod +x run_tmux_sessions.sh
 ./run_tmux_sessions.sh
 ```
-Be aware that this will generate $510$ tmux sessions and as many corresponding solution files.
 
 ## General Usage
 In order to run `IndepDF` and `DepDF` (this paper) vs `LAZY-GREEDY` and `QUERY-BASED-AMNESIA` (baselines) execute
