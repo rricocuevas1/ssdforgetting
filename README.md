@@ -20,7 +20,6 @@ In order to replicate our experiments run
 chmod +x run_tmux_sessions.sh
 ./run_tmux_sessions.sh
 ```
-Note that the experiments will take 3 days to complete.
 
 ## General Usage
 In order to run `IndepDF` and `DepDF` (this paper) vs `LAZY-GREEDY` and `QUERY-BASED-AMNESIA` (baselines) execute
@@ -33,11 +32,11 @@ The command line arguments correspond to:
 - `[percentage_of_ql]`: The percentage of queries from the corresponding query-log $Q$ to use as input log. Select a number inside the continuous interval [0, 1].
 - `[budget]`: The budget $B$ is the percentage of $D$ to be kept. Select a number inside the continuous interval [0,1].
 - `[n_iterations]`: The number of `SCG` iterations $T$ the `DepDF` routine will perform. Select a number from the list [2000, 10000, 50000, 100000].
-- `[av_stdevs_calculation]`: Whether the answer set diversity $ad(Q,D)$ is computed or not. Select `0` (False) not to perform the calculation, and `1` (True) to perform it.
-- `[only_time]`: Whether $f(D^{\*})$ is evaluated or not for solution $D^{\*}$ or only the time taken to build $D^{\*}$ is reported. Select `0` (False) to return both the time and function evaluation and `1` (True) to just return the time.
+- `[av_stdevs_calculation]`: Whether the average answer set diversity is computed or not. Select `0` (False) not to perform the calculation, and `1` (True) to perform it.
+- `[only_time]`: Whether $f(D^*)$ is evaluated or not for solution $D^*$ or only the time taken to build $D^*$ is reported. Select `0` (False) to return both the time and function evaluation and `1` (True) to just return the time.
 
 An example is given in the code snippet below,
 ```
 python main.py flight 1 0.25 0.01 2000 0 0
 ```
-In this example $D$ equals the full flights dataset, $Q$ is the $25$% of the query-log, $B$ is $1$% of $|D|$, $T= 2000$, $ad(Q,D)$ is not computed, and both the time taken to build $D^{\*}$ and $f(D^{\*})$ are reported.
+In this example $D$ equals the full flights dataset, $Q$ is the 25% of the query-log, $B$ is 1% of $|D|$, $T= 2000$, average answer set diversity is not computed, and both the time taken to build $D^*$ and $f(D^*)$ are reported.
