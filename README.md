@@ -24,7 +24,7 @@ This will run every experiment 10 times. To integrate the results, please run th
 ```
 python process_results.py
 ```
-This will create the final solution files for each one of the experiments. Each file containins the standard deviation and average of the quality and runtime for IndepDF, DepDF, LAZY-GREEDY, and QUERY-BASED-AMNESIA for the experiment described by the solution file name.
+This will create the final solution files for each one of the experiments. Each file containins the standard deviation and average of the quality and runtime for IndepDF, DepDF, LAZY-GREEDY, and QUERY-BASED-AMNESIA for the corresponding experiment described by each one of the file names.
 ## General Usage
 In order to run `IndepDF` and `DepDF` (this paper) vs `LAZY-GREEDY` and `QUERY-BASED-AMNESIA` (baselines) please execute the following command:
 ```
