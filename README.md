@@ -15,12 +15,16 @@ The data is hosted on Google Drive. You can download it using the following link
 Once you download it please un-zip it and place it in the same directory as the source files.
 
 ## Experiment reproducibility
-In order to replicate our experiments run 
+In order to replicate our experiments please run the following command: 
 ```
 chmod +x run_tmux_sessions.sh
 ./run_tmux_sessions.sh
 ```
-
+This will run every configuration 10 times and produce 10 solution files for each one. To integrate the results, please run the following command:
+```
+python process_results.py
+```
+This will create each final solution file containing the standard deviation and average of the quality and time for IndepDF, DepDF, LAZY-GREEDY, and QUERY-BASED-AMNESIA on the experiment with the parameter configuration described by the file name.
 ## General Usage
 In order to run `IndepDF` and `DepDF` (this paper) vs `LAZY-GREEDY` and `QUERY-BASED-AMNESIA` (baselines) execute
 ```
