@@ -20,13 +20,13 @@ In order to replicate our experiments please run the following command:
 chmod +x run_tmux_sessions.sh
 ./run_tmux_sessions.sh
 ```
-This will run every configuration 10 times and produce 10 solution files for each one. To integrate the results, please run the following command:
+This will run every experiment 10 times producing 10 solution files for each one. To integrate the results, please run the following command:
 ```
 python process_results.py
 ```
-This will create each final solution file containing the standard deviation and average of the quality and time for IndepDF, DepDF, LAZY-GREEDY, and QUERY-BASED-AMNESIA on the experiment with the parameter configuration described by the file name.
+This will create the final solution files for each one of the experiments. Each file containins the standard deviation and average of the quality and time for IndepDF, DepDF, LAZY-GREEDY, and QUERY-BASED-AMNESIA for the experiment described by the solution file name.
 ## General Usage
-In order to run `IndepDF` and `DepDF` (this paper) vs `LAZY-GREEDY` and `QUERY-BASED-AMNESIA` (baselines) execute
+In order to run `IndepDF` and `DepDF` (this paper) vs `LAZY-GREEDY` and `QUERY-BASED-AMNESIA` (baselines) please execute the following command:
 ```
 python main.py [dataset_choice] [percentage_of_db] [percentage_of_ql] [budget] [n_iterations] [av_stdevs_calculation] [only_time]
 ```
