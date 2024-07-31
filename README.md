@@ -20,7 +20,7 @@ In order to replicate our experiments please run the following command:
 chmod +x run_tmux_sessions.sh
 ./run_tmux_sessions.sh
 ```
-This will run every experiment 10 times producing 10 solution files for each one. To integrate the results, please run the following command:
+This will run every experiment 10 times. To integrate the results, please run the following command:
 ```
 python process_results.py
 ```
