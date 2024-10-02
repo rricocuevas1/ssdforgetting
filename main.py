@@ -4,6 +4,7 @@ from statistics import mean
 from statistics import pstdev
 from query_based_amnesia import *
 from lazy_greedy import *
+from lazy_greedy_plus_fast_nn import *
 from pipagerounding import *
 from dep_df import *
 from indep_df import *
@@ -45,6 +46,13 @@ def main():
 
         print(f'Tuples: {n_rows}, Queries: {n_queries}, Budget: {budget}')
 
+        ##
+        av_size_answer_sets = 0
+        for i in range(len(queries)):
+            av_size_answer_sets += len(queries[i][0])
+        av_size_answer_sets = av_size_answer_sets/len(queries)
+        print(f"The average size of the answer sets is {av_size_answer_sets}")
+        ##
         # INDEP_DF
         answer_indep_df, indep_df_time = run_with_timeout(indep_df, n_rows, budget, queries)
         indep_df_time, indep_df_utility = print_results("Indep_df", answer_indep_df, indep_df_time)
@@ -65,6 +73,12 @@ def main():
         answer_lazy_greedy, lazy_greedy_time = run_with_timeout(lazy_greedy, dataset, queries, budget, jaccard_sim)
         lazy_greedy_time, utility_lazy_greedy = print_results("LAZY GREEDY", answer_lazy_greedy, lazy_greedy_time)
 
+        # LAZY GREEDY + fast NN
+        threshold_acceptance=0.95
+        num_neighbors=10
+        answer_lazy_greedy_fast, lazy_greedy_time_fast = run_with_timeout(lazy_greedy_lsh, dataset, queries, budget, threshold_acceptance, num_neighbors, jaccard_sim)
+        lazy_greedy_fast_time, utility_lazy_greedy_fast = print_results("LAZY GREEDY + fast NN", answer_lazy_greedy_fast, lazy_greedy_time_fast)
+
         # Write the results into a file
         with open(results_filename, 'w') as file:
             if not only_time:
@@ -73,12 +87,14 @@ def main():
                 file.write(f"DEP_DF, {dep_df_time}, {dep_df_utility}\n")
                 file.write(f"QUERY_BASED_AMNESIA, {query_based_amnesia_time}, {query_based_amnesia_utility}\n")
                 file.write(f"LAZY GREEDY, {lazy_greedy_time}, {utility_lazy_greedy}\n")
+                file.write(f"LAZY GREEDY + fast NN , {lazy_greedy_fast_time}, {utility_lazy_greedy_fast}\n")
             else:
                 file.write(f'Algorithm, Time\n')
                 file.write(f"INDEP_DF, {indep_df_time}\n")
                 file.write(f"DEP_DF, {dep_df_time}\n")
                 file.write(f"QUERY_BASED_AMNESIA, {query_based_amnesia_time}\n")
                 file.write(f"LAZY GREEDY, {lazy_greedy_time}\n")
+                file.write(f"LAZY GREEDY + fast NN , {lazy_greedy_fast_time}\n")
 
     def compute_pairwise_sims(points, dataset, jaccard_sim):
         n = len(points)
@@ -192,6 +208,7 @@ def main():
                 stdevs.append(pstdev(compute_pairwise_sims(query, dataset, jaccard_sim=jaccard_sim)))
         print(f"The average standard deviation is: {mean(stdevs)}")
         avstdevs = mean(stdevs)
+    dataset = dataset.values # Convert dataset to NumPy array
     execute_computations(dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename,
                          jaccard_sim=jaccard_sim, n_iterations=n_iterations, only_time=only_time)
     if av_stdevs_calculation:

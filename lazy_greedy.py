@@ -1,10 +1,16 @@
 from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
+import pandas as pd
 from jaccard import *
 from queue import PriorityQueue
 
 
 def objective(dataset, dataset_prime_indices, queries, jaccard_sim=True):
+    # Convert the dataset to a NumPy array inside the function
+    #if isinstance(dataset, pd.DataFrame):
+    #    data_array = dataset.values  # Convert to NumPy array
+    #else:
+    data_array = dataset
     value = 0
     n_queries = len(queries)
     for q in range(n_queries):
@@ -16,19 +22,24 @@ def objective(dataset, dataset_prime_indices, queries, jaccard_sim=True):
             answer_set_q_dataset_prime = list(set(answer_set_q_dataset).intersection(dataset_prime_indices))
             for d_prime in answer_set_q_dataset_prime:
                 if jaccard_sim:
-                    similarity = jaccard(dataset.loc[d].values.flatten().tolist(), dataset.loc[d_prime].values.flatten().tolist())
+                    similarity = jaccard(
+                        data_array[d],
+                        data_array[d_prime]
+                    )
                 else:
-                    similarity = cosine_similarity([dataset.loc[d].values.flatten().tolist()], [dataset.loc[d_prime].values.flatten().tolist()])[0][0]
-                    similarity = (similarity + 1)/2
+                    similarity = cosine_similarity(
+                        [data_array[d]],
+                        [data_array[d_prime]]
+                    )[0][0]
+                    similarity = (similarity + 1) / 2
                 if similarity > best_similarity_d:
                     best_similarity_d = similarity
-            partial_value = partial_value + (1 / len(answer_set_q_dataset))*best_similarity_d
-        value = value + prob_q*partial_value
+            partial_value += (1 / len(answer_set_q_dataset)) * best_similarity_d
+        value += prob_q * partial_value
     return value
 
-
 def lazy_greedy(dataset, queries, budget, jaccard_sim=True):
-    # Priority queue implementation
+    """Lazy Greedy algorithm for submodular optimization"""
     answer = []
     n = dataset.shape[0]
     deltas = PriorityQueue()
