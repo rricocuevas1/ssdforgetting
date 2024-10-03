@@ -1,10 +1,21 @@
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+
 from jaccard import jaccard
 
 
 def compute_similarity_matrix(data_array, answer_set_q, d, jaccard_sim):
-    """Compute similarity vector"""
+    """Compute a similarity vector between a given data point and a set of data points.
+
+    Parameters:
+    data_array (np.ndarray): The dataset as a NumPy array.
+    answer_set_q (list): A list of indices representing a subset of the dataset.
+    d (np.ndarray): A data point from the dataset.
+    jaccard_sim (bool): If True, use Jaccard similarity; otherwise, use cosine similarity.
+
+    Returns:
+    np.ndarray: A vector of similarity scores.
+    """
     if jaccard_sim:
         similarities = np.array([jaccard(d, data_array[i]) for i in answer_set_q])
     else:

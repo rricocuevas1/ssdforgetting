@@ -1,3 +1,4 @@
+import csv
 import signal
 import sys
 import time
@@ -6,7 +7,7 @@ from datetime import datetime
 from statistics import mean
 from statistics import pstdev
 
-from sklearn.metrics.pairwise import cosine_similarity
+import pandas as pd
 
 from dep_df import *
 from indep_df import *
