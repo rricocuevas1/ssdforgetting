@@ -9,7 +9,12 @@ pip install -r requirements.txt
 ```
 
 ## Data Download
+The data can be automatically downloaded by running the following command:
+```bash
+python prepare_data.py
+```
 
+Alternatively, you can download the data manually.
 The data is hosted on Google Drive. You can download it using the following link:
 
 - [Download Data](https://drive.google.com/file/d/1YjCt-RZUyEHslqmA3yJHJi-Tk6SNFlbP/view?usp=sharing)
