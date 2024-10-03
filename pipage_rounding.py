@@ -45,5 +45,8 @@ def pipage_rounding(x_fractional, n, B):
                 x[q] = x[p] + x[q] - 1
                 x[p] = 1
                 p = max((p, q)) + 1
-    answer = np.where(x == 1)[0].tolist()
+    answer = []
+    for i in range(n):
+        if int(x[i]) == 1:
+            answer.append(i)
     return answer
