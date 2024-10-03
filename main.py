@@ -13,7 +13,7 @@ from dep_df import *
 from indep_df import *
 from lazy_greedy import *
 from lazy_greedy_plus_fast_nn import *
-from pipagerounding import *
+from pipage_rounding import *
 from query_based_amnesia import *
 
 
