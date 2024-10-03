@@ -1,11 +1,13 @@
 import numpy as np
 
+
 def compute_frequency(n_rows, queries):
     frequency = np.zeros(n_rows, dtype=int)
     for j in range(len(queries)):
         answer_set = queries[j][0]
         np.add.at(frequency, answer_set, 1)
     return frequency
+
 
 def query_based_amnesia(n_rows, budget, queries):
     """Query-based amnesia algorithm"""

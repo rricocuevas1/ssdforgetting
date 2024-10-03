@@ -1,22 +1,24 @@
+import signal
+import sys
 import time
-import pandas as pd
+import uuid
+from datetime import datetime
 from statistics import mean
 from statistics import pstdev
-from query_based_amnesia import *
+
+from sklearn.metrics.pairwise import cosine_similarity
+
+from dep_df import *
+from indep_df import *
 from lazy_greedy import *
 from lazy_greedy_plus_fast_nn import *
 from pipagerounding import *
-from dep_df import *
-from indep_df import *
-from sklearn.metrics.pairwise import cosine_similarity
-import sys
-import signal
-import uuid
-from datetime import datetime
+from query_based_amnesia import *
 
 
 def main():
-    def execute_computations(dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename, jaccard_sim=True, n_iterations=2000, only_time=False):
+    def execute_computations(dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename,
+                             jaccard_sim=True, n_iterations=2000, only_time=False):
         def handler(signum, frame):
             raise TimeoutError("Computation exceeded the time limit.")
 
@@ -50,7 +52,7 @@ def main():
         av_size_answer_sets = 0
         for i in range(len(queries)):
             av_size_answer_sets += len(queries[i][0])
-        av_size_answer_sets = av_size_answer_sets/len(queries)
+        av_size_answer_sets = av_size_answer_sets / len(queries)
         print(f"The average size of the answer sets is {av_size_answer_sets}")
         ##
         # INDEP_DF
@@ -59,25 +61,32 @@ def main():
 
         # DEP_DF
         def dep_df_computation():
-            x_star = scg(n_rows, budget, queries, prob_queries, n_queries, dataset, T=n_iterations, K=1, jaccard_sim=jaccard_sim)
+            x_star = scg(n_rows, budget, queries, prob_queries, n_queries, dataset, T=n_iterations, K=1,
+                         jaccard_sim=jaccard_sim)
             return pipage_rounding(x_star, n_rows, budget)
 
         answer_dep_df, dep_df_time = run_with_timeout(dep_df_computation)
         dep_df_time, dep_df_utility = print_results("Dep_df", answer_dep_df, dep_df_time)
 
         # QUERY-BASED AMNESIA
-        answer_query_based_amnesia, query_based_amnesia_time = run_with_timeout(query_based_amnesia, n_rows, budget, queries)
-        query_based_amnesia_time, query_based_amnesia_utility = print_results("QUERY-BASED AMNESIA", answer_query_based_amnesia, query_based_amnesia_time)
+        answer_query_based_amnesia, query_based_amnesia_time = run_with_timeout(query_based_amnesia, n_rows, budget,
+                                                                                queries)
+        query_based_amnesia_time, query_based_amnesia_utility = print_results("QUERY-BASED AMNESIA",
+                                                                              answer_query_based_amnesia,
+                                                                              query_based_amnesia_time)
 
         # LAZY GREEDY
         answer_lazy_greedy, lazy_greedy_time = run_with_timeout(lazy_greedy, dataset, queries, budget, jaccard_sim)
         lazy_greedy_time, utility_lazy_greedy = print_results("LAZY GREEDY", answer_lazy_greedy, lazy_greedy_time)
 
         # LAZY GREEDY + fast NN
-        threshold_acceptance=0.95
-        num_neighbors=10
-        answer_lazy_greedy_fast, lazy_greedy_time_fast = run_with_timeout(lazy_greedy_lsh, dataset, queries, budget, threshold_acceptance, num_neighbors, jaccard_sim)
-        lazy_greedy_fast_time, utility_lazy_greedy_fast = print_results("LAZY GREEDY + fast NN", answer_lazy_greedy_fast, lazy_greedy_time_fast)
+        threshold_acceptance = 0.95
+        num_neighbors = 10
+        answer_lazy_greedy_fast, lazy_greedy_time_fast = run_with_timeout(lazy_greedy_lsh, dataset, queries, budget,
+                                                                          threshold_acceptance, num_neighbors,
+                                                                          jaccard_sim)
+        lazy_greedy_fast_time, utility_lazy_greedy_fast = print_results("LAZY GREEDY + fast NN",
+                                                                        answer_lazy_greedy_fast, lazy_greedy_time_fast)
 
         # Write the results into a file
         with open(results_filename, 'w') as file:
@@ -109,16 +118,16 @@ def main():
                         sims.append(s)
                 else:
                     s = cosine_similarity([d_i], [d_j])[0][0]
-                    s = (s+1)/2
+                    s = (s + 1) / 2
                     if s != 0:
                         sims.append(s)
         return sims
 
-    def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iterations,av_stdevs_calculation):
+    def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iterations, av_stdevs_calculation):
         dataset_paths = ["sample_data/real/flight data/flights.csv",
                          "sample_data/real/open photo data/photos.csv",
                          "sample_data/real/Wikidata/wikidata.csv"]
-        querylogs_paths = ["sample_data/real/flight data/flights_queries_ordered.csv", #flights_queries
+        querylogs_paths = ["sample_data/real/flight data/flights_queries_ordered.csv",  # flights_queries
                            "sample_data/real/open photo data/photos_queries_less100_ordered.csv",
                            "sample_data/real/Wikidata/wikiqueries_final.csv"]
 
@@ -195,7 +204,10 @@ def main():
     else:
         jaccard_sim = False
     dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename = read_data(dataset_choice,
-        percentage_of_db, percentage_of_ql, budget, n_iterations, av_stdevs_calculation)
+                                                                                            percentage_of_db,
+                                                                                            percentage_of_ql, budget,
+                                                                                            n_iterations,
+                                                                                            av_stdevs_calculation)
 
     if av_stdevs_calculation:
         stdevs = []
@@ -208,7 +220,7 @@ def main():
                 stdevs.append(pstdev(compute_pairwise_sims(query, dataset, jaccard_sim=jaccard_sim)))
         print(f"The average standard deviation is: {mean(stdevs)}")
         avstdevs = mean(stdevs)
-    dataset = dataset.values # Convert dataset to NumPy array
+    dataset = dataset.values  # Convert dataset to NumPy array
     execute_computations(dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename,
                          jaccard_sim=jaccard_sim, n_iterations=n_iterations, only_time=only_time)
     if av_stdevs_calculation:
