@@ -5,8 +5,7 @@ import numpy as np
 
 def pipage_rounding(x_fractional, n, B):
     """Randomized pipage rounding algorithm for matroid associated to the cardinality constraint"""
-    p = 0
-    q = 1
+    p, q = 0, 1
     x = [round(i, 2) for i in x_fractional.copy()]
     if sum(x) != B:  # Normalize
         diff = B - sum(x)
@@ -46,8 +45,5 @@ def pipage_rounding(x_fractional, n, B):
                 x[q] = x[p] + x[q] - 1
                 x[p] = 1
                 p = max((p, q)) + 1
-    answer = []
-    for i in range(n):
-        if int(x[i]) == 1:
-            answer.append(i)
+    answer = np.where(x == 1)[0].tolist()
     return answer
