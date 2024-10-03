@@ -3,8 +3,9 @@ from itertools import combinations
 from queue import PriorityQueue
 import numpy as np
 from datasketch import MinHash, MinHashLSH
+from scipy.spatial.distance import jaccard
 from sklearn.metrics.pairwise import cosine_similarity
-from jaccard import jaccard
+
 
 
 # Helper functions for SimHash
