@@ -7,10 +7,6 @@ from jaccard import *
 
 
 def objective(dataset, dataset_prime_indices, queries, jaccard_sim=True):
-    # Convert the dataset to a NumPy array inside the function
-    # if isinstance(dataset, pd.DataFrame):
-    #    data_array = dataset.values  # Convert to NumPy array
-    # else:
     data_array = dataset
     value = 0
     n_queries = len(queries)
