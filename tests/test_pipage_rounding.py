@@ -12,6 +12,10 @@ class TestPipageRounding(unittest.TestCase):
         result = pipage_rounding([1, 1, 1, 1], 4, 4)
         self.assertEqual(result, [0, 1, 2, 3])
 
+    def test_all_fractional_values_one_2(self):
+        result = pipage_rounding([1, 1, 1, 1], 4, 3)
+        self.assertEqual(len(result), 3)
+
     def test_fractional_values_sum_to_B(self):
         result = pipage_rounding([0.5, 0.5, 0.5, 0.5], 4, 2)
         self.assertEqual(len(result), 2)
@@ -27,4 +31,13 @@ class TestPipageRounding(unittest.TestCase):
     def test_fractional_values_with_zeros_and_ones(self):
         result = pipage_rounding([0, 1, 0.5, 0.5], 4, 2)
         self.assertEqual(len(result), 2)
+        self.assertIn(1, result)
+
+    def test_fractional_values_with_zeros_and_ones_2(self):
+        result = pipage_rounding([0, 1, 0.5, 0.5], 4, 1)
+        self.assertEqual(len(result), 1)
+
+    def test_fractional_values_with_zeros_and_ones_3(self):
+        result = pipage_rounding([0, 1, 0.5, 0.5], 4, 3)
+        self.assertEqual(len(result), 3)
         self.assertIn(1, result)
