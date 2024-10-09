@@ -1,8 +1,8 @@
 import glob
-import pandas as pd
-import numpy as np
 import os
 
+import numpy as np
+import pandas as pd
 
 n_rows = {
     'flight': 1200,
@@ -66,10 +66,12 @@ combinations = [
 
 base_dir = './sample_data/real'
 
+
 def generate_pattern(combination):
     parts = combination.split()
     dataset_type, db, ql, budget, iterations, av, onlytime = parts
-    pattern = os.path.join(base_dir, f"results_{dataset_type}%db{db}_%ql{ql}_budget{budget}_iterations{iterations}_av{av}_onlytime{onlytime}_*")
+    pattern = os.path.join(base_dir,
+                           f"results_{dataset_type}%db{db}_%ql{ql}_budget{budget}_iterations{iterations}_av{av}_onlytime{onlytime}_*")
     return pattern
 
 
@@ -128,5 +130,3 @@ for combination in combinations:
     output_filename = f"results_{pattern.replace('*', '').replace('results_', '').replace(base_dir + '/', '')}.csv"
     aggregated_df.to_csv(os.path.join(base_dir, output_filename), index=False)
     print(f"Created {output_filename}")
-
-

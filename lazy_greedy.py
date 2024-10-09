@@ -1,15 +1,12 @@
-from sklearn.metrics.pairwise import cosine_similarity
-import numpy as np
-import pandas as pd
-from jaccard import *
 from queue import PriorityQueue
+
+import numpy as np
+from sklearn.metrics.pairwise import cosine_similarity
+
+from jaccard import *
 
 
 def objective(dataset, dataset_prime_indices, queries, jaccard_sim=True):
-    # Convert the dataset to a NumPy array inside the function
-    #if isinstance(dataset, pd.DataFrame):
-    #    data_array = dataset.values  # Convert to NumPy array
-    #else:
     data_array = dataset
     value = 0
     n_queries = len(queries)
@@ -38,6 +35,7 @@ def objective(dataset, dataset_prime_indices, queries, jaccard_sim=True):
         value += prob_q * partial_value
     return value
 
+
 def lazy_greedy(dataset, queries, budget, jaccard_sim=True):
     """Lazy Greedy algorithm for submodular optimization"""
     answer = []
@@ -56,7 +54,8 @@ def lazy_greedy(dataset, queries, budget, jaccard_sim=True):
                 answer.append(d_star_index)
                 break
             else:
-                delta_d_star = -(objective(dataset, list(set(answer).union({d_star_index})), queries, jaccard_sim) - objective(dataset, answer, queries, jaccard_sim))
+                delta_d_star = -(objective(dataset, list(set(answer).union({d_star_index})), queries,
+                                           jaccard_sim) - objective(dataset, answer, queries, jaccard_sim))
                 deltas.put((delta_d_star, d_star_index))
                 delta_top_of_q, index_top_of_q = deltas.get()
                 if d_star_index == index_top_of_q:
@@ -65,4 +64,3 @@ def lazy_greedy(dataset, queries, budget, jaccard_sim=True):
                 else:
                     deltas.put((delta_top_of_q, index_top_of_q))
     return answer
-
