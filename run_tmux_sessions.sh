@@ -3,13 +3,12 @@
 # Define the command and the configurations
 command="python3 main.py"
 configs=(
-    "photo 1 1 0.03 10000 0 0"
-    "flight 1 1 0.25 25000 0 0"
-    "flight 1 1 0.25 50000 0 0"
-    "flight 1 1 0.25 100000 0 0"
-    "photo 1 1 0.01 25000 0 0"
-    "photo 1 1 0.01 50000 0 0"
-    "photo 1 1 0.01 100000 0 0"
+    "photo 1 1 0.01 10000 0 0"
+    "photo 1 1 0.02 10000 0 0"
+    "photo 1 1 0.05 10000 0 0"
+    "photo 1 1 0.1 10000 0 0"
+    "photo 1 1 0.25 10000 0 0"
+    "photo 1 1 0.5 10000 0 0"
 )
 
 # Loop through each configuration and run the command 5 times for each
