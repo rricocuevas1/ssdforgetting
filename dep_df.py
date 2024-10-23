@@ -1,15 +1,27 @@
-import csv
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+
 from jaccard import jaccard
 
+
 def compute_similarity_matrix(data_array, answer_set_q, d, jaccard_sim):
-    """Compute similarity vector"""
+    """Compute a similarity vector between a given data point and a set of data points.
+
+    Parameters:
+    data_array (np.ndarray): The dataset as a NumPy array.
+    answer_set_q (list): A list of indices representing a subset of the dataset.
+    d (np.ndarray): A data point from the dataset.
+    jaccard_sim (bool): If True, use Jaccard similarity; otherwise, use cosine similarity.
+
+    Returns:
+    np.ndarray: A vector of similarity scores.
+    """
     if jaccard_sim:
         similarities = np.array([jaccard(d, data_array[i]) for i in answer_set_q])
     else:
         similarities = cosine_similarity([d], data_array[answer_set_q])[0]
     return similarities
+
 
 def gradient(x, n, queries, p, m, data_array, K=20, jaccard_sim=True):
     """Compute the stochastic gradient"""
@@ -36,6 +48,7 @@ def gradient(x, n, queries, p, m, data_array, K=20, jaccard_sim=True):
 
     return grad / K
 
+
 def largest_coordinates(d, n, B):
     """Select the B largest coordinates"""
     indices = np.argpartition(d, -B)[-B:]
@@ -43,17 +56,18 @@ def largest_coordinates(d, n, B):
     v[indices] = 1
     return v.tolist()
 
+
 def scg(n, B, queries, p, m, dataset, T=500, K=20, jaccard_sim=True):
     """Stochastic Continuous Greedy algorithm for submodular optimization"""
     # Convert the dataset to a NumPy array inside scg
-    #data_array = dataset.values  # Convert to NumPy array
+    # data_array = dataset.values  # Convert to NumPy array
     data_array = dataset
     d = np.zeros(n)
     x = np.zeros(n)
     ro_base = 1 / 2
 
     for t in range(T):
-        ro = ro_base / ((t+1) ** (2/3))
+        ro = ro_base / ((t + 1) ** (2 / 3))
         grad = gradient(x, n, queries, p, m, data_array, K, jaccard_sim)  # Pass data_array
         d = d * (1 - ro) + grad * ro
         v = largest_coordinates(d, n, B)

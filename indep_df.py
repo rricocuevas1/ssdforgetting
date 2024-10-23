@@ -1,6 +1,8 @@
-import numpy as np
 from itertools import islice
 from multiprocessing import Pool, cpu_count
+
+import numpy as np
+
 
 def chunked_iterable(iterable, chunk_size):
     it = iter(iterable)
@@ -9,6 +11,7 @@ def chunked_iterable(iterable, chunk_size):
         if not chunk:
             break
         yield chunk
+
 
 def process_queries_chunk(args):
     n_rows, queries_chunk = args
@@ -20,6 +23,7 @@ def process_queries_chunk(args):
         per_element_weight = query_weight / len(answer_set)
         np.add.at(weight_chunk, answer_set, per_element_weight)
     return weight_chunk
+
 
 def compute_weight(n_rows, queries):
     weight = np.zeros(n_rows)
@@ -39,6 +43,7 @@ def compute_weight(n_rows, queries):
             per_element_weight = query_weight / len(answer_set)
             np.add.at(weight, answer_set, per_element_weight)
     return weight
+
 
 def indep_df(n_rows, budget, queries):
     """IndepDF algorithm"""
