@@ -7,6 +7,8 @@ configs=(
     "photo 1 1 0.02 10000 0 0"
     "photo 1 1 0.05 10000 0 0"
     "photo 1 1 0.1 10000 0 0"
+    "photo 1 1 0.25 10000 0 0"
+    "photo 1 1 0.5 10000 0 0"
 )
 
 # Loop through each configuration and run the command 5 times for each
