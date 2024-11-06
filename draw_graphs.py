@@ -1,7 +1,3 @@
-import matplotlib.pyplot as plt
-import numpy as np
-
-
 def draw_plots_experiments():
     # FIGURE 1A: QUALITY PERFORMANCE for changing budget Flights data
     """
@@ -543,7 +539,7 @@ def draw_plots_experiments():
     plt.savefig('T_vs_quality_photos_time_bars.png')
     """
     # Plot the time ones the same way as the ones for T.
-    #FIGURE 2A: Flights various budget
+    # FIGURE 2A: Flights various budget
     """
     x = [0.1, 0.25, 0.5]
     y_depdf_mean = [137.93595974445344, 151.10381247997285, 154.9591686964035]

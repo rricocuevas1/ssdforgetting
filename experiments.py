@@ -1,9 +1,3 @@
-import csv
-import matplotlib.pyplot as plt
-import numpy as np
-import random
-
-
 def draw_plots_experiments():
     # QUALITY PERFORMANCE for changing answer set diversity photos (DONE!)
     """

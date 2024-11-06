@@ -1,0 +1,12 @@
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Sample Data Files
+sample_data/
+
+# Virtual Environment
+venv/
+
