@@ -3,207 +3,428 @@ import numpy as np
 
 
 def draw_plots_experiments():
-    # FIGURE 1A: QUALITY PERFORMANCE for changing budget Flights data
-    """
-    x = [0.1, 0.25, 0.5, 0.75]
-    y_depdf_mean = [0.7512452094599877, 0.8934438265207371, 0.9547233866925284, 0.9790341030662738]
-    y_depdf_stdev = [0.014696250234060874, 0.010084459678218005, 0.007218785180082161, 0.00438487998716]
-    y_indepdf_mean = [0.8323423601507475, 0.9338624002153416, 0.9790682110682116, 0.9897417417417428]
-    y_indepdf_stdev = [0, 0, 0, 0]
-    y_query_based_amnesia_mean = [0.3724731549406623, 0.6452524608692366, 0.8718894648799699, 0.96867459704699]
-    y_query_based_amnesia_stdev = [0.061646990863908846, 0.022757388920295763, 0.02606214531838884, 0.003216052180233966]
-    # Lazy Greedy data only for x = 0.1
-    y_lazy_greedy_mean = [0.8333490674638844]
-    y_lazy_greedy_stdev = [0]
-    colors = {
-        'DepDF': '#1E90FF',
-        'IndepDF': '#87CEFA',
-        'QB-Amnesia': '#FFD700',
-        'LAZY GREEDY': '#FFA500'
+    # FIGURE 2A: QUALITY PERFORMANCE for changing budget Flights data
+
+    # Data for x-axis and y-axis (mean and standard deviation)
+    x = [0.1, 0.25, 0.5]
+    y_means = {
+        'DepDF': [0.7546705996548375, 0.8958379223015223, 0.9644257050715419],
+        'IndepDF': [0.831837735925193, 0.9334995163230462, 0.9789635349635353],
+        'QB-Amnesia': [0.37553830613553413, 0.6431243994763717, 0.8709434808519834],
+        'LAZY GREEDY + FAST NN': [0.8323337801421675, 0.932794138676492, 0.9787284427284432],
+        'LAZY GREEDY': [0.8333490674638844, 0.937642651054416, 0.9810604890604896]
     }
+    y_stdevs = {
+        'DepDF': [0.009144745414889759, 0.010034358044083687, 0.0032836134848875684],
+        'IndepDF': [0, 0, 0],
+        'QB-Amnesia': [0.06243840242527972, 0.040889401269470375, 0.017915962148619277],
+        'LAZY GREEDY + FAST NN': [0, 0, 0],
+        'LAZY GREEDY': [0, 0, 0]
+    }
+
+    # Colors for the bars
+    colors = {
+        'DepDF': '#1E90FF',  # Dark Blue
+        'IndepDF': '#87CEFA',  # Light Blue
+        'QB-Amnesia': '#FFD700',  # Softer Yellow (Amber)
+        'LAZY GREEDY + FAST NN': '#B22222',  # Dark Burgundy Red
+        'LAZY GREEDY': '#FF8C00'  # Orange
+    }
+
+    # Bar width and position settings
     width = 0.15
     x_pos = np.arange(len(x))
+
+    # Create figure and axis
     fig, ax = plt.subplots()
-    ax.bar(x_pos - 1.5 * width, y_depdf_mean, width, yerr=y_depdf_stdev, capsize=5, label='DepDF', color=colors['DepDF'])
-    ax.bar(x_pos - 0.5 * width, y_indepdf_mean, width, yerr=y_indepdf_stdev, capsize=5, label='IndepDF', color=colors['IndepDF'])
-    ax.bar(x_pos + 0.5 * width, y_query_based_amnesia_mean, width, yerr=y_query_based_amnesia_stdev, capsize=5, label='QB-Amnesia', color=colors['QB-Amnesia'])
-    ax.bar(x_pos[0] + 1.5 * width, y_lazy_greedy_mean, width, yerr=y_lazy_greedy_stdev, capsize=5, label='LAZY GREEDY', color=colors['LAZY GREEDY'])
+
+    # Plot each bar group using a loop to avoid repetition
+    for i, (label, color) in enumerate(colors.items()):
+        ax.bar(x_pos + (i - 2) * width, y_means[label], width,
+            yerr=y_stdevs[label], capsize=5, label=label, color=color)
+
+    # Axis labels and ticks
     ax.set_xlabel("Budget (percentage of database)")
     ax.set_ylabel("Quality percentage")
     ax.set_xticks(x_pos)
-    ax.set_xticklabels(['0.1', '0.25', '0.5', '0.75'])
-    ax.legend()
-    plt.savefig('budget_size_vs_time_quality_flights.png')
-    """
-    """
+    xtick_labels = ['0.1', '0.25', '0.5']
+    ax.set_xticklabels(xtick_labels)
+
+    # Legend with ordered labels
+    handles, labels = ax.get_legend_handles_labels()
+    ordered_labels = ['DepDF', 'IndepDF', 'QB-Amnesia', 'LAZY GREEDY + FAST NN', 'LAZY GREEDY']
+    ordered_handles = [handles[labels.index(label)] for label in ordered_labels]
+    ax.legend(ordered_handles, ordered_labels, loc='best')
+
+    # Save the figure
+    plt.savefig('budget_size_vs_quality_flights.png')
+    plt.close(fig)
+    
+
+    # FIGURE 2D: TIME PERFORMANCE for changing budget Flights data
+    # Data
     x = [0.1, 0.25, 0.5]
-    y_depdf_mean = [0.7512452094599877, 0.8934438265207371, 0.9547233866925284]
-    y_depdf_stdev = [0.014696250234060874, 0.010084459678218005, 0.007218785180082161]
-    y_indepdf_mean = [0.8323423601507475, 0.9338624002153416, 0.9790682110682116]
-    y_indepdf_stdev = [0, 0, 0]
-    y_query_based_amnesia_mean = [0.3724731549406623, 0.6452524608692366, 0.8718894648799699]
-    y_query_based_amnesia_stdev = [0.061646990863908846, 0.022757388920295763, 0.02606214531838884]
-    # Lazy Greedy data only for x = 0.1
-    y_lazy_greedy_mean = [0.8333490674638844]
-    y_lazy_greedy_stdev = [0]
-    colors = {
-        'DepDF': '#1E90FF',
-        'IndepDF': '#87CEFA',
-        'QB-Amnesia': '#FFD700',
-        'LAZY GREEDY': '#FFA500'
+    y_means = {
+        'DepDF': [6.0199722978803845, 7.405186295509338, 7.631312584877014],
+        'IndepDF': [0.0007738272349039333, 0.0007942676544188899, 0.00075559616088861],
+        'QB-Amnesia': [0.001265737745496911, 0.0019113302230834499, 0.00200409889221186],
+        'LAZY GREEDY + FAST NN': [317.71119668748645, 618.0088408470153, 1132.1897844076157],
+        'LAZY GREEDY': [1143.423146724701, 4922.1659584283825, 12750.733463954926]
     }
+    y_stdevs = {
+        'DepDF': [1.6111795025708524, 1.1557413791327562, 1.120771075070531],
+        'IndepDF': [3.8685756327398916e-05, 6.690719949385502e-05, 6.907072146464752e-05],
+        'QB-Amnesia': [0.0003373087135401621, 0.0002685314676366417, 0.00024659478924008235],
+        'LAZY GREEDY + FAST NN': [105.58308664172012, 87.0868825770274, 430.08769839285344],
+        'LAZY GREEDY': [176.36796086345947, 792.6504212799819, 1748.5249800101983]
+
+    }
+    colors = {
+        'DepDF': '#1E90FF',  # Dark Blue
+        'IndepDF': '#87CEFA',  # Light Blue
+        'QB-Amnesia': '#FFD700',  # Softer Yellow (Amber)
+        'LAZY GREEDY': '#FF8C00',  # Orange
+        'LAZY GREEDY + FAST NN': '#B22222'  # Dark Burgundy Red
+    }
+
+    # Plot configuration
     width = 0.15
     x_pos = np.arange(len(x))
     fig, ax = plt.subplots()
-    ax.bar(x_pos - 1.5 * width, y_depdf_mean, width, yerr=y_depdf_stdev, capsize=5, label='DepDF',
-           color=colors['DepDF'])
-    ax.bar(x_pos - 0.5 * width, y_indepdf_mean, width, yerr=y_indepdf_stdev, capsize=5, label='IndepDF',
-           color=colors['IndepDF'])
-    ax.bar(x_pos + 0.5 * width, y_query_based_amnesia_mean, width, yerr=y_query_based_amnesia_stdev, capsize=5,
-           label='QB-Amnesia', color=colors['QB-Amnesia'])
-    ax.bar(x_pos[0] + 1.5 * width, y_lazy_greedy_mean, width, yerr=y_lazy_greedy_stdev, capsize=5, label='LAZY GREEDY',
-           color=colors['LAZY GREEDY'])
+
+    # Plot each bar group
+    for i, label in enumerate(y_means.keys()):
+        ax.bar(x_pos + (i - len(y_means) // 2) * width, y_means[label], width,
+            yerr=y_stdevs[label], capsize=5, label=label, color=colors[label])
+
+    # Logarithmic y-axis
+    ax.set_yscale('log')
+
+    # Add horizontal lines for 1 second, 1 minute, 1 hour, 1 day
+    seconds_in_second = 1
+    seconds_in_minute = 60 
+    seconds_in_hour = 60 * 60
+    seconds_in_day = 60 * 60 * 24
+
+    ax.axhline(seconds_in_second, color='gray', linestyle='--', linewidth=1)
+    ax.text(len(x) - 0.5, seconds_in_second, '1 second', color='gray', va='bottom', ha='right')
+
+    ax.axhline(seconds_in_minute, color='gray', linestyle='--', linewidth=1)
+    ax.text(len(x) - 0.5, seconds_in_minute, '1 minute', color='gray', va='bottom', ha='right')
+
+    ax.axhline(seconds_in_hour, color='gray', linestyle='--', linewidth=1)
+    ax.text(len(x) - 0.5, seconds_in_hour, '1 hour', color='gray', va='bottom', ha='right')
+
+    ax.axhline(seconds_in_day, color='gray', linestyle='--', linewidth=1)
+    ax.text(len(x) - 0.5, seconds_in_day, '1 day', color='gray', va='bottom', ha='right')
+
+
+    # Labels and ticks
     ax.set_xlabel("Budget (percentage of database)")
-    ax.set_ylabel("Quality percentage")
+    ax.set_ylabel("Computation time (seconds)")
     ax.set_xticks(x_pos)
     ax.set_xticklabels(['0.1', '0.25', '0.5'])
-    ax.legend()
-    plt.savefig('budget_size_vs_time_quality_flights.png')
-    """
-    # FIGURE 1D: QUALITY PERFORMANCE for changing budget Photo data
-    """
-    x = [0.001, 0.005, 0.01, 0.02]
-    y_depdf_mean = [0.5081598380209523, 0.8738944322300177, 0.9264101853688995, 0.9763762143164973]
-    y_depdf_stdev = [0.03430311219562485, 0.009530904418520603, 0.0017386643376264385, 0.001278476715249487]
-    y_indepdf_mean = [0.1755818782416476, 0.5026259750345834, 0.7088702497190746, 0.9258169266938582]
-    y_indepdf_stdev = [0, 0, 0, 0]
-    y_lazy_greedy_mean = [0.8223959313561867, 0.919123780112853, 0.9566169851813131, 0.9922235448639766]
-    y_lazy_greedy_stdev = [0, 0, 0, 0]
-    y_query_based_amnesia_mean = [0.4429284441056181, 0.8167672703046506, 0.894465052038392, 0.9690561724773932]
-    y_query_based_amnesia_stdev = [0.039357072548368684, 0.016525166506355705, 0.011631740387042754, 0.0022953606953845566]
-    colors = {
-        'DepDF': '#1E90FF',
-        'IndepDF': '#87CEFA',
-        'QB-Amnesia': '#FFD700',
-        'LAZY GREEDY': '#FFA500'
+
+    # Legend handling
+    handles, labels = ax.get_legend_handles_labels()
+    ordered_handles = [handles[labels.index(label)] for label in labels]
+    ax.legend(ordered_handles, labels, loc='best')
+
+    # Save the figure
+    plt.savefig('budget_size_vs_time_flights.png')
+    plt.close(fig)
+    
+
+    # FIGURE 2B: QUALITY PERFORMANCE for changing budget Photo data
+    
+    x = [0.02, 0.05, 0.1]
+    y_means = {
+        'DepDF': [0.7529144067416605, 0.8592212239455334, 0.9141553299669113],
+        'IndepDF': [0.6222263616367543, 0.8339073127319698, 0.9246819972204507],
+        'QB-Amnesia': [0.6345710530474259, 0.7728529206380468, 0.8668758855501959],
+        'LAZY GREEDY + FAST NN': [0.6815134829784272, 0.8604175109884135, 0.9402255571659849],
+        'LAZY GREEDY': [np.nan, np.nan, np.nan]
     }
+    y_stdevs = {
+        'DepDF': [0.00587044106978651, 0.004721395393394939, 0.004593613848662287],
+        'IndepDF': [0, 0, 0],
+        'QB-Amnesia': [0.009714436331491333, 0.007787575957518025, 0.004333412157248837],
+        'LAZY GREEDY + FAST NN': [0.00883673280028652, 0.0047320173892094605, 0.002435500599698396],
+        'LAZY GREEDY': [np.nan, np.nan, np.nan]
+    }
+
+    # Colors for the bars
+    colors = {
+        'DepDF': '#1E90FF',  # Dark Blue
+        'IndepDF': '#87CEFA',  # Light Blue
+        'QB-Amnesia': '#FFD700',  # Softer Yellow (Amber)
+        'LAZY GREEDY': '#FF8C00',  # Orange
+        'LAZY GREEDY + FAST NN': '#B22222'  # Dark Burgundy Red
+    }
+
+    # Define an explicit ordered list of labels
+    ordered_labels = ['DepDF', 'IndepDF', 'QB-Amnesia', 'LAZY GREEDY + FAST NN', 'LAZY GREEDY']
+
+    # Bar width and position settings
     width = 0.15
     x_pos = np.arange(len(x))
+
+    # Create figure and axis
     fig, ax = plt.subplots()
-    ax.bar(x_pos - 1.5 * width, y_depdf_mean, width, yerr=y_depdf_stdev, capsize=5, label='DepDF', color=colors['DepDF'])
-    ax.bar(x_pos - 0.5 * width, y_indepdf_mean, width, yerr=y_indepdf_stdev, capsize=5, label='IndepDF', color=colors['IndepDF'])
-    ax.bar(x_pos + 0.5 * width, y_query_based_amnesia_mean, width, yerr=y_query_based_amnesia_stdev, capsize=5, label='QB-Amnesia', color=colors['QB-Amnesia'])
-    ax.bar(x_pos + 1.5 * width, y_lazy_greedy_mean, width, yerr=y_lazy_greedy_stdev, capsize=5, label='LAZY GREEDY', color=colors['LAZY GREEDY'])
+
+    # Plot each bar group using a loop with an explicit order
+    for i, label in enumerate(ordered_labels):
+        ax.bar(x_pos + (i - (len(ordered_labels) // 2)) * width, y_means[label], width,
+            yerr=y_stdevs[label], capsize=5, label=label, color=colors[label])
+
+    # Axis labels and ticks
     ax.set_xlabel("Budget (percentage of database)")
     ax.set_ylabel("Quality percentage")
     ax.set_xticks(x_pos)
-    ax.set_xticklabels(['0.001', '0.005', '0.01', '0.02'])
-    ax.legend()
-    plt.savefig('budget_size_vs_time_quality_photos.png')
-    """
-    """
-    x = [0.005, 0.01, 0.02]
-    y_depdf_mean = [0.8738944322300177, 0.9264101853688995, 0.9763762143164973]
-    y_depdf_stdev = [0.009530904418520603, 0.0017386643376264385, 0.001278476715249487]
-    y_indepdf_mean = [0.5026259750345834, 0.7088702497190746, 0.9258169266938582]
-    y_indepdf_stdev = [0, 0, 0]
-    y_lazy_greedy_mean = [0.919123780112853, 0.9566169851813131, 0.9922235448639766]
-    y_lazy_greedy_stdev = [0, 0, 0]
-    y_query_based_amnesia_mean = [0.8167672703046506, 0.894465052038392, 0.9690561724773932]
-    y_query_based_amnesia_stdev = [0.016525166506355705, 0.011631740387042754,
-                                   0.0022953606953845566]
-    colors = {
-        'DepDF': '#1E90FF',
-        'IndepDF': '#87CEFA',
-        'QB-Amnesia': '#FFD700',
-        'LAZY GREEDY': '#FFA500'
+    xtick_labels = ['0.02', '0.05', '0.1']
+    ax.set_xticklabels(xtick_labels)
+
+    # Legend with ordered labels
+    handles, labels = ax.get_legend_handles_labels()
+    ordered_handles = [handles[labels.index(label)] for label in ordered_labels]
+    ax.legend(ordered_handles, ordered_labels, loc='best')
+
+    # Save the figure
+    plt.savefig('budget_size_vs_quality_photos.png')
+    plt.close(fig)
+    
+
+    # FIGURE 2E: TIME PERFORMANCE for changing budget Photo data
+    
+    # Data for x-axis and y-axis (mean and standard deviation)
+    x = [0.02, 0.05, 0.1]
+    y_means = {
+        'DepDF': [399.5396808385849, 357.94043333530425, 225.50409071445466],
+        'IndepDF': [0.00436940193176263, 0.00381395816802974, 0.00425946712493892],
+        'QB-Amnesia': [0.015866589546203562, 0.0084659099578857, 0.01798729896545405],
+        'LAZY GREEDY + FAST NN': [158610.49799060822, 187100.0584590435, 213926.5086236795],
+        'LAZY GREEDY': [np.nan, np.nan, np.nan]
     }
+    y_stdevs = {
+        'DepDF': [15.536409458869402, 19.097708278238215, 33.736453526933644],
+        'IndepDF': [0.0011964165966327864, 0.0006129152981777414, 0.0007949028003025106],
+        'QB-Amnesia': [0.009763948556346299, 0.0014060564159351055, 0.013015877021395898],
+        'LAZY GREEDY + FAST NN': [70118.95527826565, 53983.850338683915, 10060.51381531734],
+        'LAZY GREEDY': [np.nan, np.nan, np.nan]
+    }
+
+    # Colors for the bars
+    colors = {
+        'DepDF': '#1E90FF',  # Dark Blue
+        'IndepDF': '#87CEFA',  # Light Blue
+        'QB-Amnesia': '#FFD700',  # Softer Yellow (Amber)
+        'LAZY GREEDY': '#FF8C00',  # Orange
+        'LAZY GREEDY + FAST NN': '#B22222'  # Dark Burgundy Red
+    }
+
+    # Define an explicit ordered list of labels
+    ordered_labels = ['DepDF', 'IndepDF', 'QB-Amnesia', 'LAZY GREEDY + FAST NN', 'LAZY GREEDY']
+
+    # Bar width and position settings
     width = 0.15
     x_pos = np.arange(len(x))
+
+    # Create figure and axis
     fig, ax = plt.subplots()
-    ax.bar(x_pos - 1.5 * width, y_depdf_mean, width, yerr=y_depdf_stdev, capsize=5, label='DepDF',
-           color=colors['DepDF'])
-    ax.bar(x_pos - 0.5 * width, y_indepdf_mean, width, yerr=y_indepdf_stdev, capsize=5, label='IndepDF',
-           color=colors['IndepDF'])
-    ax.bar(x_pos + 0.5 * width, y_query_based_amnesia_mean, width, yerr=y_query_based_amnesia_stdev, capsize=5,
-           label='QB-Amnesia', color=colors['QB-Amnesia'])
-    ax.bar(x_pos + 1.5 * width, y_lazy_greedy_mean, width, yerr=y_lazy_greedy_stdev, capsize=5, label='LAZY GREEDY',
-           color=colors['LAZY GREEDY'])
+
+    # Plot each bar group using a loop with an explicit order
+    for i, label in enumerate(ordered_labels):
+        ax.bar(x_pos + (i - (len(ordered_labels) // 2)) * width, y_means[label], width,
+            yerr=y_stdevs[label], capsize=5, label=label, color=colors[label])
+
+    # Logarithmic y-axis
+    ax.set_yscale('log')
+
+    # Add horizontal lines for key time markers (1 second, 1 minute, 1 hour, 1 day)
+    seconds_in_second = 1
+    seconds_in_minute = 60
+    seconds_in_hour = 60 * 60
+    seconds_in_day = 60 * 60 * 24
+
+    ax.axhline(seconds_in_second, color='gray', linestyle='--', linewidth=1)
+    ax.text(len(x) - 0.5, seconds_in_second, '1 second', color='gray', va='bottom', ha='right')
+
+    ax.axhline(seconds_in_minute, color='gray', linestyle='--', linewidth=1)
+    ax.text(len(x) - 0.5, seconds_in_minute, '1 minute', color='gray', va='bottom', ha='right')
+
+    ax.axhline(seconds_in_hour, color='gray', linestyle='--', linewidth=1)
+    ax.text(len(x) - 0.5, seconds_in_hour, '1 hour', color='gray', va='bottom', ha='right')
+
+    ax.axhline(seconds_in_day, color='gray', linestyle='--', linewidth=1)
+    ax.text(len(x) - 0.5, seconds_in_day, '1 day', color='gray', va='bottom', ha='right')
+
+    # Axis labels and ticks
     ax.set_xlabel("Budget (percentage of database)")
-    ax.set_ylabel("Quality percentage")
+    ax.set_ylabel("Computation time (seconds)")
     ax.set_xticks(x_pos)
-    ax.set_xticklabels(['0.005', '0.01', '0.02'])
-    ax.legend()
-    plt.savefig('budget_size_vs_time_quality_photos.png')
-    """
-    # FIGURE 1G: QUALITY PERFORMANCE for changing budget Wiki data
-    """
-    x = [0.01, 0.1, 0.25, 0.5]
-    y_depdf_mean = [0.344575152624916, 0.6392360296169058, 0.7620563907430288, 0.8535091068771452]
-    y_depdf_stdev = [0.0068347967576424425, 0.013551676049720296, 0.005526268138251984, 0.0056094682664522034]
-    y_indepdf_mean = [0.5499046723239122, 0.8548548681719849, 0.9368123136607502, 0.9804455242479065]
-    y_indepdf_stdev = [0, 0, 0, 0]
-    y_query_based_amnesia_mean = [0.32178889177621073, 0.6813887091547196, 0.8184298249899644, 0.9113651709799585]
-    y_query_based_amnesia_stdev = [0.013059685665873382, 0.006780903904783918, 0.003917912239328943, 0.0017502806622520357]
-    # Lazy Greedy data only for x = 0.1
-    y_lazy_greedy_mean = [0]
-    y_lazy_greedy_stdev = [0]
-    colors = {
-        'DepDF': '#1E90FF',
-        'IndepDF': '#87CEFA',
-        'QB-Amnesia': '#FFD700',
-        'LAZY GREEDY': '#FFA500'
-    }
-    width = 0.15
-    x_pos = np.arange(len(x))
-    fig, ax = plt.subplots()
-    ax.bar(x_pos - 1.5 * width, y_depdf_mean, width, yerr=y_depdf_stdev, capsize=5, label='DepDF', color=colors['DepDF'])
-    ax.bar(x_pos - 0.5 * width, y_indepdf_mean, width, yerr=y_indepdf_stdev, capsize=5, label='IndepDF', color=colors['IndepDF'])
-    ax.bar(x_pos + 0.5 * width, y_query_based_amnesia_mean, width, yerr=y_query_based_amnesia_stdev, capsize=5, label='QB-Amnesia', color=colors['QB-Amnesia'])
-    ax.bar(x_pos[0] + 1.5 * width, y_lazy_greedy_mean, width, yerr=y_lazy_greedy_stdev, capsize=5, label='LAZY GREEDY', color=colors['LAZY GREEDY'])
-    ax.set_xlabel("Budget (percentage of database)")
-    ax.set_ylabel("Quality percentage")
-    ax.set_xticks(x_pos)
-    ax.set_xticklabels(["0.01", "0.1", "0.25", "0.5"])
-    ax.legend()
-    plt.savefig('budget_size_vs_time_quality_wiki.png')
-    """
-    """
+    xtick_labels = ['0.02', '0.05', '0.1']
+    ax.set_xticklabels(xtick_labels)
+
+    # Legend with ordered labels
+    handles, labels = ax.get_legend_handles_labels()
+    ordered_handles = [handles[labels.index(label)] for label in ordered_labels]
+    ax.legend(ordered_handles, ordered_labels, loc='best')
+
+    # Save the figure
+    plt.savefig('budget_size_vs_time_photos.png')
+    plt.close(fig)
+    
+
+    # FIGURE 2C: QUALITY PERFORMANCE for changing budget Wiki data
+    # Data for x-axis and y-axis (mean and standard deviation)
     x = [0.1, 0.25, 0.5]
-    y_depdf_mean = [0.6392360296169058, 0.7620563907430288, 0.8535091068771452]
-    y_depdf_stdev = [0.013551676049720296, 0.005526268138251984, 0.0056094682664522034]
-    y_indepdf_mean = [0.8548548681719849, 0.9368123136607502, 0.9804455242479065]
-    y_indepdf_stdev = [0, 0, 0]
-    y_query_based_amnesia_mean = [0.6813887091547196, 0.8184298249899644, 0.9113651709799585]
-    y_query_based_amnesia_stdev = [0.006780903904783918, 0.003917912239328943,
-                                   0.0017502806622520357]
-    # Lazy Greedy data only for x = 0.1
-    y_lazy_greedy_mean = [0]
-    y_lazy_greedy_stdev = [0]
-    colors = {
-        'DepDF': '#1E90FF',
-        'IndepDF': '#87CEFA',
-        'QB-Amnesia': '#FFD700',
-        'LAZY GREEDY': '#FFA500'
+    y_means = {
+        'DepDF': [0.6967402485053181, 0.8350008318515467, 0.9118017865415355],
+        'IndepDF': [0.8548548681719849, 0.9368025250538364, 0.9802769684440538],
+        'QB-Amnesia': [0.6797316315571285, 0.8169441370623195, 0.9122563170717986],
+        'LAZY GREEDY + FAST NN': [np.nan, np.nan, np.nan],
+        'LAZY GREEDY': [np.nan, np.nan, np.nan]
     }
+    y_stdevs = {
+        'DepDF': [0.004836356339030948, 0.007121330633450144, 0.003401627587109086],
+        'IndepDF': [0, 0, 0],
+        'QB-Amnesia': [0.0048742497798597555, 0.0039578153732793275, 0.0015658540977650745],
+        'LAZY GREEDY + FAST NN': [np.nan, np.nan, np.nan],
+        'LAZY GREEDY': [np.nan, np.nan, np.nan]
+    }
+
+    # Colors for the bars
+    colors = {
+        'DepDF': '#1E90FF',  # Dark Blue
+        'IndepDF': '#87CEFA',  # Light Blue
+        'QB-Amnesia': '#FFD700',  # Softer Yellow (Amber)
+        'LAZY GREEDY': '#FF8C00',  # Orange
+        'LAZY GREEDY + FAST NN': '#B22222'  # Dark Burgundy Red
+    }
+
+    # Define an explicit ordered list of labels
+    ordered_labels = ['DepDF', 'IndepDF', 'QB-Amnesia', 'LAZY GREEDY + FAST NN', 'LAZY GREEDY']
+
+    # Bar width and position settings
     width = 0.15
     x_pos = np.arange(len(x))
+
+    # Create figure and axis
     fig, ax = plt.subplots()
-    ax.bar(x_pos - 1.5 * width, y_depdf_mean, width, yerr=y_depdf_stdev, capsize=5, label='DepDF',
-           color=colors['DepDF'])
-    ax.bar(x_pos - 0.5 * width, y_indepdf_mean, width, yerr=y_indepdf_stdev, capsize=5, label='IndepDF',
-           color=colors['IndepDF'])
-    ax.bar(x_pos + 0.5 * width, y_query_based_amnesia_mean, width, yerr=y_query_based_amnesia_stdev, capsize=5,
-           label='QB-Amnesia', color=colors['QB-Amnesia'])
-    ax.bar(x_pos[0] + 1.5 * width, y_lazy_greedy_mean, width, yerr=y_lazy_greedy_stdev, capsize=5, label='LAZY GREEDY',
-           color=colors['LAZY GREEDY'])
+
+    # Plot each bar group using a loop with an explicit order
+    for i, label in enumerate(ordered_labels):
+        ax.bar(x_pos + (i - (len(ordered_labels) // 2)) * width, y_means[label], width,
+            yerr=y_stdevs[label], capsize=5, label=label, color=colors[label])
+
+    # Axis labels and ticks
     ax.set_xlabel("Budget (percentage of database)")
     ax.set_ylabel("Quality percentage")
     ax.set_xticks(x_pos)
-    ax.set_xticklabels(["0.1", "0.25", "0.5"])
-    ax.legend()
-    plt.savefig('budget_size_vs_time_quality_wiki.png')
-    """
+    xtick_labels = ['0.1', '0.25', '0.5']
+    ax.set_xticklabels(xtick_labels)
+
+    # Legend with ordered labels
+    handles, labels = ax.get_legend_handles_labels()
+    ordered_handles = [handles[labels.index(label)] for label in ordered_labels]
+    ax.legend(ordered_handles, ordered_labels, loc='best')
+
+    # Save the figure
+    plt.savefig('budget_size_vs_quality_wiki.png')
+    plt.close(fig)
+
+    
+    # FIGURE 2F: TIME PERFORMANCE for changing budget Wiki data
+   
+    # Data for x-axis and y-axis (mean and standard deviation)
+    x = [0.1, 0.25, 0.5]
+    y_means = {
+        'DepDF': [232.3884106874466, 222.2639479637146, 236.57969160079955],
+        'IndepDF': [0.12318415641784666, 0.11725423071119516, 0.1418429851531982],
+        'QB-Amnesia': [0.1029222965240478, 0.11834051873948834, 0.11749706268310542],
+        'LAZY GREEDY + FAST NN': [np.nan, np.nan, np.nan],
+        'LAZY GREEDY': [np.nan, np.nan, np.nan]
+    }
+    y_stdevs = {
+        'DepDF': [29.395251893480108, 38.511094584452756, 18.891902310301017],
+        'IndepDF': [0.03401127613615488, 0.03322741287814581, 0.02245917594596426],
+        'QB-Amnesia': [0.03357951757009398, 0.0351685105186319, 0.026333783868162562],
+        'LAZY GREEDY + FAST NN': [np.nan, np.nan, np.nan],
+        'LAZY GREEDY': [np.nan, np.nan, np.nan]
+    }
+
+    # Colors for the bars
+    colors = {
+        'DepDF': '#1E90FF',  # Dark Blue
+        'IndepDF': '#87CEFA',  # Light Blue
+        'QB-Amnesia': '#FFD700',  # Softer Yellow (Amber)
+        'LAZY GREEDY': '#FF8C00',  # Orange
+        'LAZY GREEDY + FAST NN': '#B22222'  # Dark Burgundy Red
+    }
+
+    # Define an explicit ordered list of labels
+    ordered_labels = ['DepDF', 'IndepDF', 'QB-Amnesia', 'LAZY GREEDY + FAST NN', 'LAZY GREEDY']
+
+    # Bar width and position settings
+    width = 0.15
+    x_pos = np.arange(len(x))
+
+    # Create figure and axis
+    fig, ax = plt.subplots()
+
+    # Plot each bar group using a loop with an explicit order
+    for i, label in enumerate(ordered_labels):
+        ax.bar(x_pos + (i - (len(ordered_labels) // 2)) * width, y_means[label], width,
+            yerr=y_stdevs[label], capsize=5, label=label, color=colors[label])
+
+    # Logarithmic y-axis
+    ax.set_yscale('log')
+
+    # Add horizontal lines for key time markers (1 second, 1 minute, 1 hour, 1 day)
+    seconds_in_second = 1
+    seconds_in_minute = 60
+    seconds_in_hour = 60 * 60
+    seconds_in_day = 60 * 60 * 24
+
+    ax.axhline(seconds_in_second, color='gray', linestyle='--', linewidth=1)
+    ax.text(len(x) - 0.5, seconds_in_second, '1 second', color='gray', va='bottom', ha='right')
+
+    ax.axhline(seconds_in_minute, color='gray', linestyle='--', linewidth=1)
+    ax.text(len(x) - 0.5, seconds_in_minute, '1 minute', color='gray', va='bottom', ha='right')
+
+    ax.axhline(seconds_in_hour, color='gray', linestyle='--', linewidth=1)
+    ax.text(len(x) - 0.5, seconds_in_hour, '1 hour', color='gray', va='bottom', ha='right')
+
+    ax.axhline(seconds_in_day, color='gray', linestyle='--', linewidth=1)
+    ax.text(len(x) - 0.5, seconds_in_day, '1 day', color='gray', va='bottom', ha='right')
+
+    # Axis labels and ticks
+    ax.set_xlabel("Budget (percentage of database)")
+    ax.set_ylabel("Computation time (seconds)")
+    ax.set_xticks(x_pos)
+    xtick_labels = ['0.1', '0.25', '0.5']
+    ax.set_xticklabels(xtick_labels)
+
+    # Legend with ordered labels
+    handles, labels = ax.get_legend_handles_labels()
+    ordered_handles = [handles[labels.index(label)] for label in ordered_labels]
+    ax.legend(ordered_handles, ordered_labels, loc='best')
+
+    # Save the figure
+    plt.savefig('budget_size_vs_time_wikidata.png')
+    plt.close(fig)
+    
+
+
+
+
+
+
+
+    
+    
+
+
     # FIGURE 1I: QUALITY PERFORMANCE for changing answer set diversity flights
     """
     x = [0.05757007029485365, 0.04869947495850181, 0.04445579754164265, 0.03708746644665503]
@@ -543,164 +764,7 @@ def draw_plots_experiments():
     plt.savefig('T_vs_quality_photos_time_bars.png')
     """
     # Plot the time ones the same way as the ones for T.
-    #FIGURE 2A: Flights various budget
-    """
-    x = [0.1, 0.25, 0.5]
-    y_depdf_mean = [137.93595974445344, 151.10381247997285, 154.9591686964035]
-    y_depdf_stdev = [11.208084904702167, 35.14818925753355, 64.2845697357688]
-    y_indepdf_mean = [0.1463512659072876, 0.17838122844696042, 0.1687108755111694]
-    y_indepdf_stdev = [0.054629057581267786, 0.0557517170132203, 0.07784507014853935]
-    y_query_based_amnesia_mean = [0.3688062906265258, 0.347007417678833, 0.36919367313385004]
-    y_query_based_amnesia_stdev = [0.03263305540945669, 0.10331618091575226, 0.15720398189550386]
-    # Lazy Greedy data only for x = 0.1
-    y_lazy_greedy_mean = [98975.70789148807,np.nan, np.nan]
-    y_lazy_greedy_stdev = [20483.671334775605,np.nan, np.nan]
-    colors = {
-        'DepDF': '#1E90FF',
-        'IndepDF': '#87CEFA',
-        'QB-Amnesia': '#FFD700',
-        'LAZY GREEDY': '#FFA500'
-    }
 
-    # Plot
-    fig, ax = plt.subplots()
-
-    # Plot lines with shaded areas for standard deviation
-    ax.plot(x, y_depdf_mean, marker='o', linestyle='-', color=colors['DepDF'], label='DepDF')
-    ax.fill_between(x, np.array(y_depdf_mean) - np.array(y_depdf_stdev),
-                    np.array(y_depdf_mean) + np.array(y_depdf_stdev),
-                    color=colors['DepDF'], alpha=0.3)
-
-    ax.plot(x, y_indepdf_mean, marker='o', linestyle='-', color=colors['IndepDF'], label='IndepDF')
-    ax.fill_between(x, np.array(y_indepdf_mean) - np.array(y_indepdf_stdev),
-                    np.array(y_indepdf_mean) + np.array(y_indepdf_stdev),
-                    color=colors['IndepDF'], alpha=0.3)
-
-    ax.plot(x, y_query_based_amnesia_mean, marker='o', linestyle='-', color=colors['QB-Amnesia'], label='QB-Amnesia')
-    ax.fill_between(x, np.array(y_query_based_amnesia_mean) - np.array(y_query_based_amnesia_stdev),
-                    np.array(y_query_based_amnesia_mean) + np.array(y_query_based_amnesia_stdev),
-                    color=colors['QB-Amnesia'], alpha=0.3)
-
-    ax.plot(x, y_lazy_greedy_mean, marker='o', linestyle='-', color=colors['LAZY GREEDY'], label='LAZY GREEDY')
-    ax.fill_between(x, np.array(y_lazy_greedy_mean) - np.array(y_lazy_greedy_stdev),
-                    np.array(y_lazy_greedy_mean) + np.array(y_lazy_greedy_stdev),
-                    color=colors['LAZY GREEDY'], alpha=0.3)
-
-    # Labels and legend
-    ax.set_xlabel("Budget (percentage of database)")
-    ax.set_ylabel("Computation time (seconds)")
-    ax.set_xticks(x)
-    ax.set_xticklabels(['0.1', '0.25', '0.5'])
-    ax.legend()
-    ax.set_yscale('log')
-    # Save the figure
-    plt.savefig('budget_size_vs_time_flights.png')
-    """
-    # FIGURE 2B: Photos various budget
-    """
-    x = [0.005, 0.01, 0.02]
-    y_depdf_mean = [1778.4869385957718, 1529.63944993019, 1900.5912244081496]
-    y_depdf_stdev = [182.9736340945551, 455.8386630577538, 30.036130622660522]
-    y_indepdf_mean = [5.743219161033631, 5.986948323249817, 5.120628476142883]
-    y_indepdf_stdev = [0.8493934619048614, 1.1343866978182398, 1.0727021693960126]
-    y_lazy_greedy_mean = [49850.32142627239, 112976.82042610645, 228812.04254276754]
-    y_lazy_greedy_stdev = [16070.593493545975, 22151.229389161792, 36306.84055826493]
-    y_query_based_amnesia_mean = [6.416448640823364, 5.390962743759156, 7.4207323551177975]
-    y_query_based_amnesia_stdev = [1.93153631758539, 2.861785946185012, 0.45827684295540555]
-    colors = {
-        'DepDF': '#1E90FF',
-        'IndepDF': '#87CEFA',
-        'QB-Amnesia': '#FFD700',
-        'LAZY GREEDY': '#FFA500'
-    }
-
-    # Plot
-    fig, ax = plt.subplots()
-
-    # Plot lines with shaded areas for standard deviation
-    ax.plot(x, y_depdf_mean, marker='o', linestyle='-', color=colors['DepDF'], label='DepDF')
-    ax.fill_between(x, np.array(y_depdf_mean) - np.array(y_depdf_stdev),
-                    np.array(y_depdf_mean) + np.array(y_depdf_stdev),
-                    color=colors['DepDF'], alpha=0.3)
-
-    ax.plot(x, y_indepdf_mean, marker='o', linestyle='-', color=colors['IndepDF'], label='IndepDF')
-    ax.fill_between(x, np.array(y_indepdf_mean) - np.array(y_indepdf_stdev),
-                    np.array(y_indepdf_mean) + np.array(y_indepdf_stdev),
-                    color=colors['IndepDF'], alpha=0.3)
-
-    ax.plot(x, y_query_based_amnesia_mean, marker='o', linestyle='-', color=colors['QB-Amnesia'], label='QB-Amnesia')
-    ax.fill_between(x, np.array(y_query_based_amnesia_mean) - np.array(y_query_based_amnesia_stdev),
-                    np.array(y_query_based_amnesia_mean) + np.array(y_query_based_amnesia_stdev),
-                    color=colors['QB-Amnesia'], alpha=0.3)
-
-    ax.plot(x, y_lazy_greedy_mean, marker='o', linestyle='-', color=colors['LAZY GREEDY'], label='LAZY GREEDY')
-    ax.fill_between(x, np.array(y_lazy_greedy_mean) - np.array(y_lazy_greedy_stdev),
-                    np.array(y_lazy_greedy_mean) + np.array(y_lazy_greedy_stdev),
-                    color=colors['LAZY GREEDY'], alpha=0.3)
-
-    # Labels and legend
-    ax.set_xlabel("Budget (percentage of database)")
-    ax.set_ylabel("Computation time (seconds)")
-    ax.set_xticks(x)
-    ax.set_xticklabels(['0.005', '0.01', '0.02'])
-    ax.legend()
-    ax.set_yscale('log')
-    # Save the figure
-    plt.savefig('budget_size_vs_time_photos.png')
-    """
-    # FIGURE 2C: Wiki various budget
-    """
-    x = [0.1, 0.25, 0.5]
-    y_depdf_mean = [2347.271427178383, 2582.7727187871933, 2109.3595002651214]
-    y_depdf_stdev = [1061.075066983802, 972.8700189918218, 1010.0279074116955]
-    y_indepdf_mean = [7634.844181132316, 8061.247129440308, 7198.218866658211]
-    y_indepdf_stdev = [2584.448969254677, 3160.2443414402865, 2714.7583034338004]
-    y_lazy_greedy_mean = [np.nan, np.nan,np.nan]
-    y_lazy_greedy_stdev = [np.nan, np.nan,np.nan]
-    y_query_based_amnesia_mean = [5625.729870557785, 4149.606434059143, 3338.7038694381713]
-    y_query_based_amnesia_stdev = [1649.4729627207314, 1155.3391604291353, 1392.0664814708266]
-    colors = {
-        'DepDF': '#1E90FF',
-        'IndepDF': '#87CEFA',
-        'QB-Amnesia': '#FFD700',
-        'LAZY GREEDY': '#FFA500'
-    }
-
-    # Plot
-    fig, ax = plt.subplots()
-
-    # Plot lines with shaded areas for standard deviation
-    ax.plot(x, y_depdf_mean, marker='o', linestyle='-', color=colors['DepDF'], label='DepDF')
-    ax.fill_between(x, np.array(y_depdf_mean) - np.array(y_depdf_stdev),
-                    np.array(y_depdf_mean) + np.array(y_depdf_stdev),
-                    color=colors['DepDF'], alpha=0.3)
-
-    ax.plot(x, y_indepdf_mean, marker='o', linestyle='-', color=colors['IndepDF'], label='IndepDF')
-    ax.fill_between(x, np.array(y_indepdf_mean) - np.array(y_indepdf_stdev),
-                    np.array(y_indepdf_mean) + np.array(y_indepdf_stdev),
-                    color=colors['IndepDF'], alpha=0.3)
-
-    ax.plot(x, y_query_based_amnesia_mean, marker='o', linestyle='-', color=colors['QB-Amnesia'], label='QB-Amnesia')
-    ax.fill_between(x, np.array(y_query_based_amnesia_mean) - np.array(y_query_based_amnesia_stdev),
-                    np.array(y_query_based_amnesia_mean) + np.array(y_query_based_amnesia_stdev),
-                    color=colors['QB-Amnesia'], alpha=0.3)
-
-    ax.plot(x, y_lazy_greedy_mean, marker='o', linestyle='-', color=colors['LAZY GREEDY'], label='LAZY GREEDY')
-    ax.fill_between(x, np.array(y_lazy_greedy_mean) - np.array(y_lazy_greedy_stdev),
-                    np.array(y_lazy_greedy_mean) + np.array(y_lazy_greedy_stdev),
-                    color=colors['LAZY GREEDY'], alpha=0.3)
-
-    # Labels and legend
-    ax.set_xlabel("Budget (percentage of database)")
-    ax.set_ylabel("Computation time (seconds)")
-    ax.set_xticks(x)
-    ax.set_xticklabels(['0.1', '0.25', '0.5'])
-    ax.legend()
-    ax.set_yscale('log')
-    ax.set_ylim(1, 100000)
-    # Save the figure
-    plt.savefig('budget_size_vs_time_wikidata.png')
-    """
     # FIGURE 2D: DBSize vs Time Flights
     """
     x = [0.25, 0.5, 0.75, 1]
