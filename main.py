@@ -193,7 +193,7 @@ def compute_pairwise_sims(points, dataset, jaccard_sim):
     return sims
 
 
-def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iterations,av_stdevs_calculation):
+def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iterations,av_stdevs_calculation, only_time):
     """
         This function allows you to read your dataset of choice 
     """
@@ -313,7 +313,7 @@ def main():
     
     # Read data
     dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename = read_data(dataset_choice,
-        percentage_of_db, percentage_of_ql, budget, n_iterations, av_stdevs_calculation)
+        percentage_of_db, percentage_of_ql, budget, n_iterations, av_stdevs_calculation, only_time)
 
     # Compute the average diversity of the answer sets if av_stdevs_calculation = True
     if av_stdevs_calculation:
