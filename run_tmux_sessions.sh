@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Define the command and the configurations
+
 command="python3 main.py"
 configs=(
     "flight 1 1 0.1 10000 0 0"
@@ -14,7 +14,7 @@ configs=(
     "wiki 1 1 0.5 10000 0 0"
 )
 
-# Loop through each configuration and run the command 10 times for each
+
 session_number=1
 for config in "${configs[@]}"; do
     for run in {1..10}; do
