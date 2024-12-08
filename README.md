@@ -9,10 +9,15 @@ pip install statistics
 pip install numpy
 ```
 ## Data Download
-The data is hosted on Google Drive. You can download it using the following link: 
+REAL DATASETS: The 3 real datatasets are hosted on Google Drive. You can download it using the following link: 
 - [Download Data](https://drive.google.com/file/d/1YjCt-RZUyEHslqmA3yJHJi-Tk6SNFlbP/view?usp=sharing)
 
 Once you download it please un-zip it and place it in the same directory as the source files.
+
+SYNTHETIC DATASETS: To generate the 5 synthetic datasets please run:
+```
+python3 synthetic_data_generation.py
+```
 
 ## Experiment reproducibility
 In order to replicate our experiments please run the following command: 
@@ -41,6 +46,6 @@ The command line arguments correspond to:
 
 An example is given in the code snippet below,
 ```
-python main.py flight 1 0.25 0.01 2000 0 0
+python3 main.py flight 1 0.25 0.01 2000 0 0
 ```
 In this example $D$ equals the full flights dataset, $Q$ is the 25% of the query-log, $B$ is 1% of $|D|$, $T= 2000$, the average answer set diversity is not computed, and both the time taken to build $D*$ and $f(D*)$ are reported.
