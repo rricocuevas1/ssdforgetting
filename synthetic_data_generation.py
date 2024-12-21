@@ -32,9 +32,9 @@ def generate_synthetic_data(n_rows, n_queries):
 
 
 # Synthetic data (Generate datasets and logs)
-os.makedirs("sample_data/synthetic", exist_ok=True)
-generate_synthetic_data(n_rows=1000000,   n_queries=10000000)
-generate_synthetic_data(n_rows=10000000,  n_queries=10000000)
-generate_synthetic_data(n_rows=100000000, n_queries=10000000)
-generate_synthetic_data(n_rows=100000000, n_queries=1000000)
-generate_synthetic_data(n_rows=100000000, n_queries=100000)
+#os.makedirs("sample_data/synthetic", exist_ok=True)
+#generate_synthetic_data(n_rows=1000000,   n_queries=10000000)
+#generate_synthetic_data(n_rows=10000000,  n_queries=10000000)
+#generate_synthetic_data(n_rows=100000000, n_queries=10000000)
+#generate_synthetic_data(n_rows=100000000, n_queries=1000000)
+#generate_synthetic_data(n_rows=100000000, n_queries=100000)

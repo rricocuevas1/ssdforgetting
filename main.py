@@ -332,7 +332,7 @@ def main():
     dataset = dataset.values
     
     # Execute the computations: For the scalability study use execute_computations_us() 
-    # instead of execute_computations() as we are only measuring the runtime performance of our methods
+    # instead of execute_computations() as we are only measuring the runtime performance of our method
     """
     execute_computations(dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename,
                          jaccard_sim=jaccard_sim, n_iterations=n_iterations, only_time=only_time)
