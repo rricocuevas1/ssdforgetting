@@ -1,4 +1,5 @@
 import time
+import re
 import pandas as pd
 from statistics import mean
 from statistics import pstdev
@@ -217,6 +218,7 @@ def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iter
                     "sample_data/synthetic/queries_100000000_100000.csv"]
 
     def load_data(dataset_choice):
+        # Real datasets
         if dataset_choice == 'flight':
             dataset = pd.read_csv(dataset_paths[0], delimiter=",")
             n_queries = 37
@@ -231,6 +233,7 @@ def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iter
             dataset.drop('id', inplace=True, axis=1)
             n_queries = 14081
             querylog_path = querylogs_paths[2]
+        # Synthetic datasets 
         elif dataset_choice == 'S_1M_10M':
             dataset = pd.read_csv(dataset_paths[3], delimiter=",")
             n_queries = 10000000
@@ -257,14 +260,14 @@ def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iter
     dataset, n_queries, querylog_path = load_data(dataset_choice)
     # Select the corresponding percentage of the database
     n_rows = dataset.shape[0]
-    n_rows = int(round(n_rows * percentage_of_db))
-    dataset = dataset.head(n_rows)
     # Calculate the budget
     if budget < 1:
         budget = int(round(n_rows * budget))
     else:
         budget = int(budget)
     # Select the queries
+    # This is for the real data
+    """
     n_queries = int(round(n_queries * percentage_of_ql))
     query_list = []
     with open(querylog_path, 'r') as file:
@@ -285,11 +288,25 @@ def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iter
                 break
     file.close()
     n_queries = len(query_list)
+    """
+    # Fast version for synthetic data (begin)
+    queries = {i: None for i in range(n_queries)}
+    prob_queries = [1 / n_queries] * n_queries 
+    with open(querylog_path, 'r') as file:
+        for line_number, line in enumerate(file):
+            if not line.strip():
+                continue  # skip the empty lines
+            query_str = re.findall(r'-?\d+', line)
+            query_int = np.fromiter((int(num) for num in query_str), dtype=int).tolist()
+            queries[line_number] = (query_int, 1 / n_queries)
+    # Fast version for synthetic data (end)
+    """
     queries = {}
     prob_queries = []
     for i in range(n_queries):
         queries[i] = (query_list[i], 1 / n_queries)
         prob_queries.append(queries[i][1])
+    """
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S%f')
     unique_id = uuid.uuid4()
     results_filename = f"sample_data/real/results_{dataset_choice}%db{percentage_of_db}_%ql{percentage_of_ql}_budget{budget}_iterations{n_iterations}_av{av_stdevs_calculation}_onlytime{only_time}_{timestamp}_{unique_id}"
