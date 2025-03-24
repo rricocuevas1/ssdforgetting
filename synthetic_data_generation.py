@@ -1,6 +1,7 @@
 import random
 import csv
 import os
+import dask.dataframe as dd
 
 
 def generate_synthetic_data(n_rows, n_queries):
@@ -29,6 +30,18 @@ def generate_synthetic_data(n_rows, n_queries):
             writer.writerow([i for i in range(counter, counter + n_tuples_per_query)])
     file.close()
     print(f"Generated: sample_data/synthetic/queries_{n_rows}_{n_queries}.csv")
+
+
+def convert_files_to_single_parquet(directory_path, csv_list):
+    for filename in csv_list:
+        csv_filepath = os.path.join(directory_path, filename)
+        parquet_filename = os.path.splitext(filename)[0] + ".parquet"
+        parquet_filepath = os.path.join(directory_path, parquet_filename)
+
+        ddf = dd.read_csv(csv_filepath)
+        ddf.to_parquet(parquet_filepath, single_file=True)
+
+        print(f"Successfully converted '{csv_filepath}' to single Parquet file '{parquet_filepath}'")
 
 
 # Synthetic data (Generate datasets and logs)
