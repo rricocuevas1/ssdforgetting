@@ -13,8 +13,9 @@ def compute_similarity_matrix(data_array, answer_set_q, d, jaccard_sim):
 
 def gradient(x, n, queries, p, m, data_array, K=20, jaccard_sim=True):
     """Compute the stochastic gradient"""
-    q_index = np.random.choice(m, p=p)
-    answer_set_q = queries[q_index][0]
+    #q_index = np.random.choice(m, p=p)
+    q_index = np.random.choice(m)
+    answer_set_q = queries[q_index]
     d_index = np.random.choice(answer_set_q)
     d = data_array[d_index]
 

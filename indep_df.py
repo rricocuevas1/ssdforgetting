@@ -3,27 +3,20 @@ from itertools import islice
 from multiprocessing import Pool, cpu_count
 
 
-def compute_weight(n_rows, queries):
+def compute_weight(n_rows, queries, n_queries):
     """
         Sequential weight computation
     """
     weight = np.zeros(n_rows)
-    n_queries = len(queries)
     for j in range(n_queries):
-        answer_set = queries[j][0]
-        query_weight = queries[j][1]
+        answer_set = queries[j]
+        query_weight = 1/n_queries
         per_element_weight = query_weight / len(answer_set)
         np.add.at(weight, answer_set, per_element_weight)
     return weight
 
 
-
-
-
-
-
-
-def compute_weight_parallel(n_rows, queries):
+def compute_weight_parallel(n_rows, queries, n_queries):
     """
         Parallel weight computation
     """
@@ -41,14 +34,13 @@ def compute_weight_parallel(n_rows, queries):
         chunk_size = len(queries_chunk)
         weight_chunk = np.zeros(n_rows)
         for j in range(chunk_size):
-            answer_set = queries_chunk[j][0]
-            query_weight = queries_chunk[j][1]
+            answer_set = queries_chunk[j]
+            query_weight = 1/n_queries
             per_element_weight = query_weight / len(answer_set)
             np.add.at(weight_chunk, answer_set, per_element_weight)
         return weight_chunk
 
     weight = np.zeros(n_rows)
-    n_queries = len(queries)
     n_cpus = cpu_count()
     chunk_size = (n_queries + n_cpus - 1) // n_cpus
     queries_g = chunked_iterable(queries.values(), chunk_size)

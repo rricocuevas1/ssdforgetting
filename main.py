@@ -128,47 +128,28 @@ def execute_computations_us(dataset, n_rows, n_queries, queries, prob_queries, b
         finally:
             signal.alarm(0) 
 
-    def print_results(method_name, result, elapsed_time):
-        # Print and return the quality and runtime of the algorithm
-        if result is not None and not only_time:
-            utility = objective(dataset, result, queries, jaccard_sim)
-            print(f"{method_name} utility: {utility}")
-        else:
-            utility = -1
-        print(f"{method_name} time: {elapsed_time}")
-        return elapsed_time, utility
-
     print(f'Tuples: {n_rows}, Queries: {n_queries}, Budget: {budget}')
 
     # Run each one of the algorithms 
     # INDEP_DF
-    answer_indep_df, indep_df_time = run_with_timeout(indep_df, n_rows, budget, queries)
-    indep_df_time, indep_df_utility = print_results("Indep_df", answer_indep_df, indep_df_time)
+    #answer_indep_df, indep_df_time = run_with_timeout(indep_df, n_rows, budget, queries)
+    #indep_df_time, indep_df_utility = print_results("Indep_df", answer_indep_df, indep_df_time)
 
     # INDEP_DFP
-    answer_indep_dfp, indep_dfp_time = run_with_timeout(indep_df_parallel, n_rows, budget, queries)
-    indep_dfp_time, indep_dfp_utility = print_results("Indep_dfp", answer_indep_dfp, indep_dfp_time)
+    _, indep_dfp_time = run_with_timeout(indep_df_parallel, n_rows, budget, queries, n_queries)
 
     # DEP_DF
     def dep_df_computation():
         x_star = scg(n_rows, budget, queries, prob_queries, n_queries, dataset, T=n_iterations, K=1, jaccard_sim=jaccard_sim)
         return pipage_rounding(x_star, n_rows, budget)
 
-    answer_dep_df, dep_df_time = run_with_timeout(dep_df_computation)
-    dep_df_time, dep_df_utility = print_results("Dep_df", answer_dep_df, dep_df_time)
+    _, dep_df_time = run_with_timeout(dep_df_computation)
 
     # Write the results into a file
     with open(results_filename, 'w') as file:
-        if not only_time:
-            file.write(f'Algorithm, Time, Utility\n')
-            file.write(f"INDEP_DF, {indep_df_time}, {indep_df_utility}\n")
-            file.write(f"INDEP_DFP, {indep_dfp_time}, {indep_dfp_utility}\n")
-            file.write(f"DEP_DF, {dep_df_time}, {dep_df_utility}\n")
-        else:
-            file.write(f'Algorithm, Time\n')
-            file.write(f"INDEP_DF, {indep_df_time}\n")
-            file.write(f"INDEP_DFP, {indep_dfp_time}\n")
-            file.write(f"DEP_DF, {dep_df_time}\n")
+        file.write(f'Algorithm, Time\n')
+        file.write(f"INDEP_DF, {indep_dfp_time}\n")
+        file.write(f"DEP_DF, {dep_df_time}\n")
 
 
 def compute_pairwise_sims(points, dataset, jaccard_sim):
@@ -202,20 +183,20 @@ def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iter
     dataset_paths = ["sample_data/real/flight data/flights.csv",
                     "sample_data/real/open photo data/photos.csv",
                     "sample_data/real/Wikidata/wikidata.csv",
-                    "sample_data/synthetic/data_1000000_10000000.csv",
-                    "sample_data/synthetic/data_10000000_10000000.csv",
-                    "sample_data/synthetic/data_100000000_10000000.csv",
-                    "sample_data/synthetic/data_100000000_1000000.csv",
-                    "sample_data/synthetic/data_100000000_100000.csv"]
+                    "sample_data/synthetic/data_1000000_10000000.parquet",
+                    "sample_data/synthetic/data_10000000_10000000.parquet",
+                    "sample_data/synthetic/data_100000000_10000000.parquet",
+                    "sample_data/synthetic/data_100000000_1000000.parquet",
+                    "sample_data/synthetic/data_100000000_100000.parquet"]
     
     querylogs_paths = ["sample_data/real/flight data/flights_queries_ordered.csv", #flights_queries
                     "sample_data/real/open photo data/photos_queries_less100_ordered.csv",
                     "sample_data/real/Wikidata/wikiqueries_final.csv",
-                    "sample_data/synthetic/queries_1000000_10000000.csv",
-                    "sample_data/synthetic/queries_10000000_10000000.csv",
-                    "sample_data/synthetic/queries_100000000_10000000.csv",
-                    "sample_data/synthetic/queries_100000000_1000000.csv",
-                    "sample_data/synthetic/queries_100000000_100000.csv"]
+                    "sample_data/synthetic/queries_1000000_10000000.parquet",
+                    "sample_data/synthetic/queries_10000000_10000000.parquet",
+                    "sample_data/synthetic/queries_100000000_10000000.parquet",
+                    "sample_data/synthetic/queries_100000000_1000000.parquet",
+                    "sample_data/synthetic/queries_100000000_100000.parquet"]
 
     def load_data(dataset_choice):
         # Real datasets
@@ -233,25 +214,26 @@ def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iter
             dataset.drop('id', inplace=True, axis=1)
             n_queries = 14081
             querylog_path = querylogs_paths[2]
+        
         # Synthetic datasets 
         elif dataset_choice == 'S_1M_10M':
-            dataset = pd.read_csv(dataset_paths[3], delimiter=",")
+            dataset = pd.read_parquet(dataset_paths[3], delimiter=",")
             n_queries = 10000000
             querylog_path = querylogs_paths[3]
         elif dataset_choice == 'S_10M_10M':
-            dataset = pd.read_csv(dataset_paths[4], delimiter=",")
+            dataset = pd.read_parquet(dataset_paths[4], delimiter=",")
             n_queries = 10000000
             querylog_path = querylogs_paths[4]
         elif dataset_choice == 'S_100M_10M':
-            dataset = pd.read_csv(dataset_paths[5], delimiter=",")
+            dataset = pd.read_parquet(dataset_paths[5], delimiter=",")
             n_queries = 10000000
             querylog_path = querylogs_paths[5]
         elif dataset_choice == 'S_100M_1M':
-            dataset = pd.read_csv(dataset_paths[6], delimiter=",")
+            dataset = pd.read_parquet(dataset_paths[6], delimiter=",")
             n_queries = 1000000
             querylog_path = querylogs_paths[6]
         elif dataset_choice == 'S_100M_100K':
-            dataset = pd.read_csv(dataset_paths[7], delimiter=",")
+            dataset = pd.read_parquet(dataset_paths[7], delimiter=",")
             n_queries = 100000
             querylog_path = querylogs_paths[7]
         return dataset, n_queries, querylog_path
@@ -290,23 +272,12 @@ def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iter
     n_queries = len(query_list)
     """
     # Fast version for synthetic data (begin)
-    queries = {i: None for i in range(n_queries)}
-    prob_queries = [1 / n_queries] * n_queries 
-    with open(querylog_path, 'r') as file:
-        for line_number, line in enumerate(file):
-            if not line.strip():
-                continue  # skip the empty lines
-            query_str = re.findall(r'-?\d+', line)
-            query_int = np.fromiter((int(num) for num in query_str), dtype=int).tolist()
-            queries[line_number] = (query_int, 1 / n_queries)
+    query_df = pd.read_parquet(querylog_path)
+    queries = dict(zip(query_df.index, (query_df.values.tolist())))
+    #prob_queries = [1 / n_queries] * n_queries
+    prob_queries = None
+    
     # Fast version for synthetic data (end)
-    """
-    queries = {}
-    prob_queries = []
-    for i in range(n_queries):
-        queries[i] = (query_list[i], 1 / n_queries)
-        prob_queries.append(queries[i][1])
-    """
     timestamp = datetime.now().strftime('%Y%m%d%H%M%S%f')
     unique_id = uuid.uuid4()
     results_filename = f"sample_data/real/results_{dataset_choice}%db{percentage_of_db}_%ql{percentage_of_ql}_budget{budget}_iterations{n_iterations}_av{av_stdevs_calculation}_onlytime{only_time}_{timestamp}_{unique_id}"
@@ -315,7 +286,9 @@ def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iter
 
 def main():
     # Run the experiments
-    dataset_choice = sys.argv[1]  # dataset_choice in [flight, photo, wiki]
+
+    # First step: Get command line arguments
+    dataset_choice = sys.argv[1]  # dataset_choice in [flight, photo, wiki] or the synthetic ones
     percentage_of_db = float(sys.argv[2])  # percentage of the database
     percentage_of_ql = float(sys.argv[3])  # percentage of the query-log
     budget = float(sys.argv[4])  # budget
@@ -323,16 +296,17 @@ def main():
     av_stdevs_calculation = bool(int(sys.argv[6]))  # 0/1
     only_time = bool(int(sys.argv[7]))  # 0/1
 
+    # Depending on the dataset of choice set the appropiate simmilarity metric 
     if dataset_choice == 'flight':
         jaccard_sim = True
     else:
         jaccard_sim = False
     
-    # Read data
+    # Second step: Load the data into memory
     dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename = read_data(dataset_choice,
         percentage_of_db, percentage_of_ql, budget, n_iterations, av_stdevs_calculation, only_time)
 
-    # Compute the average diversity of the answer sets if av_stdevs_calculation = True
+    # Third step: Compute the average diversity of the answer sets if av_stdevs_calculation = True
     if av_stdevs_calculation:
         stdevs = []
         for i in range(n_queries):
@@ -345,11 +319,11 @@ def main():
         print(f"The average standard deviation is: {mean(stdevs)}")
         avstdevs = mean(stdevs)
     
+    # Fourth step: Execute the computations: For the scalability study use execute_computations_us()
+    # instead of execute_computations() as we are only measuring the runtime performance of our method 
     # Convert data into np.array
     dataset = dataset.values
-    
-    # Execute the computations: For the scalability study use execute_computations_us() 
-    # instead of execute_computations() as we are only measuring the runtime performance of our method
+
     """
     execute_computations(dataset, n_rows, n_queries, queries, prob_queries, budget, results_filename,
                          jaccard_sim=jaccard_sim, n_iterations=n_iterations, only_time=only_time)
