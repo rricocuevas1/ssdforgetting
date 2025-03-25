@@ -275,6 +275,7 @@ def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iter
     """
     # Fast version for synthetic data (begin)
     query_df = pd.read_parquet(querylog_path)
+    query_df = query_df.reset_index(drop=True)
     queries = dict(zip(query_df.index, (query_df.values.tolist())))
     print(queries.keys())
     #prob_queries = [1 / n_queries] * n_queries
