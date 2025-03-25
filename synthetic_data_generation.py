@@ -38,7 +38,7 @@ def convert_files_to_parquet(directory_path, csv_list):
         parquet_filename = os.path.splitext(filename)[0] + ".parquet"
         parquet_filepath = os.path.join(directory_path, parquet_filename)
 
-        ddf = dd.read_csv(csv_filepath)
+        ddf = dd.read_csv(csv_filepath, header=None)
         ddf.to_parquet(parquet_filepath)
 
         print(f"Successfully converted '{csv_filepath}' to single Parquet file '{parquet_filepath}'")
