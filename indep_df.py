@@ -53,19 +53,19 @@ def compute_weight_parallel(n_rows, queries, n_queries):
     return weight
 
 
-def indep_df_parallel(n_rows, budget, queries):
+def indep_df_parallel(n_rows, budget, queries, n_queries):
     """
         IndepDF algorithm: The weight computations are computed in parallel
     """
-    values = compute_weight_parallel(n_rows, queries)
+    values = compute_weight_parallel(n_rows, queries, n_queries)
     top_indices = np.argpartition(values, -budget)[-budget:]
     return top_indices.tolist()
 
 
-def indep_df(n_rows, budget, queries):
+def indep_df(n_rows, budget, queries, n_queries):
     """
         IndepDF algorithm: The weight computations are computed sequentially
     """
-    values = compute_weight(n_rows, queries)
+    values = compute_weight(n_rows, queries, n_queries)
     top_indices = np.argpartition(values, -budget)[-budget:]
     return top_indices.tolist()
