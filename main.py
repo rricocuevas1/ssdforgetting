@@ -136,13 +136,15 @@ def execute_computations_us(dataset, n_rows, n_queries, queries, prob_queries, b
     #indep_df_time, indep_df_utility = print_results("Indep_df", answer_indep_df, indep_df_time)
 
     # INDEP_DFP
+    print("Begin to run IndepDF")
     _, indep_dfp_time = run_with_timeout(indep_df_parallel, n_rows, budget, queries, n_queries)
 
     # DEP_DF
     def dep_df_computation():
         x_star = scg(n_rows, budget, queries, prob_queries, n_queries, dataset, T=n_iterations, K=1, jaccard_sim=jaccard_sim)
         return pipage_rounding(x_star, n_rows, budget)
-
+    
+    print("Begin to run DepDF")
     _, dep_df_time = run_with_timeout(dep_df_computation)
 
     # Write the results into a file
