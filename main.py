@@ -220,22 +220,27 @@ def read_data(dataset_choice, percentage_of_db, percentage_of_ql, budget, n_iter
         # Synthetic datasets 
         elif dataset_choice == 'S_1M_10M':
             dataset = pd.read_parquet(dataset_paths[3])
+            dataset = dataset[1:].reset_index(drop=True)
             n_queries = 10000000
             querylog_path = querylogs_paths[3]
         elif dataset_choice == 'S_10M_10M':
             dataset = pd.read_parquet(dataset_paths[4])
+            dataset = dataset[1:].reset_index(drop=True)
             n_queries = 10000000
             querylog_path = querylogs_paths[4]
         elif dataset_choice == 'S_100M_10M':
             dataset = pd.read_parquet(dataset_paths[5])
+            dataset = dataset[1:].reset_index(drop=True)
             n_queries = 10000000
             querylog_path = querylogs_paths[5]
         elif dataset_choice == 'S_100M_1M':
             dataset = pd.read_parquet(dataset_paths[6])
+            dataset = dataset[1:].reset_index(drop=True)
             n_queries = 1000000
             querylog_path = querylogs_paths[6]
         elif dataset_choice == 'S_100M_100K':
             dataset = pd.read_parquet(dataset_paths[7])
+            dataset = dataset[1:].reset_index(drop=True)
             n_queries = 100000
             querylog_path = querylogs_paths[7]
         return dataset, n_queries, querylog_path
