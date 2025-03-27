@@ -2,7 +2,7 @@
 
 command="python3 main.py"
 configs=(
-    "S_1M_10M 1 1 0.1 10000 0 1"
+    #"S_1M_10M 1 1 0.1 10000 0 1"
     "S_10M_10M 1 1 0.1 10000 0 1"
     "S_100M_100K 1 1 0.1 10000 0 1"
     "S_100M_1M 1 1 0.1 10000 0 1"
@@ -15,7 +15,6 @@ wait_for_sessions() {
     while [ $(tmux list-sessions 2>/dev/null | grep "session_" | wc -l) -gt 0 ]; do
         sleep 10
     done
-    echo "All sessions for the current config completed."
 }
 
 session_number=1
@@ -29,8 +28,9 @@ for config in "${configs[@]}"; do
         echo "Started Tmux session $session_name with command: $full_command"
         ((session_number++))
         sleep 1
+        wait_for_sessions
     done
-    wait_for_sessions
+    echo "All sessions for the current config completed."
 done
 
 echo "All configurations processed."
