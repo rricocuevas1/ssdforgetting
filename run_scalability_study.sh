@@ -19,7 +19,7 @@ wait_for_sessions() {
 }
 
 session_number=1
-runs_per_config=5
+runs_per_config=10
 
 for config in "${configs[@]}"; do
     for run in $(seq 1 $runs_per_config); do
